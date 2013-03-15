@@ -65,7 +65,7 @@
         }
 
         return [
-            "<div class='sp-container sp-hidden'>",
+            "<div class='sp-container'>",
                 "<div class='sp-palette-container'>",
                     "<div class='sp-palette sp-thumb sp-cf'></div>",
                 "</div>",
@@ -220,7 +220,7 @@
                 boundElement.after(container).hide();
             }
             else {
-                $(body).append(container);
+                $(body).append(container.hide());
             }
 
             if (localStorageKey && window.localStorage) {
@@ -288,7 +288,7 @@
             });
 
             draggable(alphaSlider, function (dragX, dragY, e) {
-                currentAlpha = (dragX / alphaWidth);
+                currentAlpha = ((alphaHeight-dragY) / alphaHeight);
                 if (e.shiftKey) {
                     currentAlpha = Math.round(currentAlpha * 10) / 10;
                 }
@@ -455,7 +455,7 @@
             $(doc).bind("click.spectrum", hide);
             $(window).bind("resize.spectrum", resize);
             replacer.addClass("sp-active");
-            container.removeClass("sp-hidden");
+            container.show();
 
             if (opts.showPalette) {
                 drawPalette();
@@ -482,7 +482,7 @@
             $(window).unbind("resize.spectrum", resize);
 
             replacer.removeClass("sp-active");
-            container.addClass("sp-hidden");
+            container.hide();
 
             var colorHasChanged = !tinycolor.equals(get(), colorOnShow);
 
@@ -572,7 +572,7 @@
                 var rgb = realColor.toRgb();
                 rgb.a = 0;
                 var realAlpha = tinycolor(rgb).toRgbString();
-                var gradient = "linear-gradient(left, " + realAlpha + ", " + realHex + ")";
+                var gradient = "linear-gradient(bottom, " + realAlpha + ", " + realHex + ")";
 
                 if (IE) {
                     alphaSliderInner.css("filter", tinycolor(realAlpha).toFilter({ gradientType: 1 }, realHex));
@@ -611,11 +611,11 @@
             var dragX = s * dragWidth;
             var dragY = dragHeight - (v * dragHeight);
             dragX = Math.max(
-                -dragHelperHeight,
+               0,
                 Math.min(dragWidth - dragHelperHeight, dragX - dragHelperHeight)
             );
             dragY = Math.max(
-                -dragHelperHeight,
+                0,
                 Math.min(dragHeight - dragHelperHeight, dragY - dragHelperHeight)
             );
             dragHelper.css({
@@ -624,14 +624,15 @@
             });
 
             var alphaX = currentAlpha * alphaWidth;
+            var alphaY = (1-currentAlpha) * alphaHeight;
             alphaSlideHelper.css({
-                "left": alphaX - (alphaSlideHelperWidth / 2)
+                "top": Math.max(alphaY - (alphaSlideHelperHeight / 2),0)
             });
 
             // Where to show the bar that displays your current selected hue
             var slideY = (currentHue) * slideHeight;
             slideHelper.css({
-                "top": slideY - slideHelperHeight
+                "top": Math.max(slideY - slideHelperHeight,0)
             });
         }
 
@@ -660,7 +661,9 @@
             slideHeight = slider.height();
             slideHelperHeight = slideHelper.height();
             alphaWidth = alphaSlider.width();
+            alphaHeight = alphaSlider.height();
             alphaSlideHelperWidth = alphaSlideHelper.width();
+            alphaSlideHelperHeight = alphaSlideHelper.height();
 
             if (!flat) {
                 container.offset(getOffset(container, offsetElement));
@@ -1744,9 +1747,5 @@
             $.fn.spectrum.processNativeColorInputs();
         }
     });
-
-
-    function log(){window.console&&(log=Function.prototype.bind?Function.prototype.bind.call(console.log,console):function(){Function.prototype.apply.call(console.log,console,arguments)},log.apply(this,arguments))};
-
 
 })(window, jQuery);
