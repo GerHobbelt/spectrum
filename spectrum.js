@@ -593,7 +593,7 @@
                         format = "rgb";
                     }
                 }
-                textInput.val(realColor.toString(format));
+                textInput.val(realColor.toHexString());
             }
 
             if (opts.showPalette) {
