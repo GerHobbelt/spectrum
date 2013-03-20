@@ -719,6 +719,9 @@
                 set(c);
                 updateOriginalInput();
             },
+            setTemp:function(c){
+                set(c);
+            },
             get: get,
             destroy: destroy,
             container: container
@@ -902,7 +905,6 @@
                     if (!method) {
                         throw new Error( "Spectrum: no such method: '" + opts + "'" );
                     }
-
                     if (opts == "get") {
                         returnValue = spect.get();
                     }
