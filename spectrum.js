@@ -12,6 +12,7 @@
         change: noop,
         show: noop,
         hide: noop,
+        input:noop,
 
         // Options
         color: false,
@@ -125,6 +126,7 @@
         var opts = $.extend({}, defaultOpts, o);
         opts.callbacks = {
             'move': bind(opts.move, callbackContext),
+            'input': bind(opts.input, callbackContext),
             'change': bind(opts.change, callbackContext),
             'show': bind(opts.show, callbackContext),
             'hide': bind(opts.hide, callbackContext),
@@ -427,6 +429,7 @@
             var tiny = tinycolor(textInput.val());
             if (tiny.ok) {
                 set(tiny);
+                callbacks.input(tiny)
             }
             else {
                 textInput.addClass("sp-validation-error");
