@@ -299,7 +299,7 @@
             });
 
             draggable(slider, function (dragX, dragY) {
-                currentHue = parseFloat(dragY / slideHeight);
+                currentHue = parseFloat((slideHeight-dragY) / slideHeight);
                 move();
             }, dragStart, dragStop);
 
@@ -633,7 +633,7 @@
             });
 
             // Where to show the bar that displays your current selected hue
-            var slideY = (currentHue) * slideHeight;
+            var slideY = (1-currentHue) * slideHeight;
             slideHelper.css({
                 "top": Math.max(slideY - slideHelperHeight,0)
             });
