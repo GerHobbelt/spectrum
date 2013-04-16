@@ -428,6 +428,7 @@
         function setFromTextInput() {
             var tiny = tinycolor(textInput.val());
             if (tiny.ok) {
+                 textInput.removeClass("sp-validation-error");
                 set(tiny);
                 callbacks.input(tiny)
             }
