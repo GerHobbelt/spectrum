@@ -1,6 +1,10 @@
 
 function updateBorders(color) {
-    $("#docs-content").css("border-color", color.toHexString());
+    var hexColor = "transparent";
+    if(color) {
+        hexColor = color.toHexString();
+    }
+    $("#docs-content").css("border-color", hexColor);
 }
 
 $(function() {
@@ -115,6 +119,14 @@ $("#flat").spectrum({
     move: updateBorders
 });
 
+$("#flatClearable").spectrum({
+    flat: true,
+    move: updateBorders,
+    change: updateBorders,
+    allowEmpty:true,
+    showInput: true
+});
+
 $("#showInput").spectrum({
     color: "#dd33dd",
     showInput: true,
@@ -144,6 +156,32 @@ $("#showAlphaWithInput").spectrum({
         ["hsla(25, 50, 75, .5)", "rgba(100, .5, .5, .8)"]
     ],
     change: updateBorders
+});
+$("#showAlphaWithInputAndEmpty").spectrum({
+    color: "rgba(255, 128, 0, .5)",
+    allowEmpty:true,
+    showAlpha: true,
+    showInput: true,
+    showPalette: true,
+    palette: [
+        ["rgba(255, 128, 0, .9)", "rgba(255, 128, 0, .5)"],
+        ["red", "green", "blue"],
+        ["hsla(25, 50, 75, .5)", "rgba(100, .5, .5, .8)"]
+    ],
+    change: updateBorders
+});
+
+$("#showInputWithClear").spectrum({
+    allowEmpty:true,
+    color: "",
+    showInput: true,
+    change: updateBorders,
+    show: function() {
+
+    },
+    hide: function() {
+
+    }
 });
 
 $("#openWithLink").spectrum({
@@ -194,7 +232,16 @@ $("#showInitial").spectrum({
 
 $("#showInputAndInitial").spectrum({
     showInitial: true,
-    showInput: true
+    showInput: true,
+    change: updateBorders
+});
+
+$("#showInputInitialClear").spectrum({
+    allowEmpty:true,
+    showInitial: true,
+    showInput: true,
+    change: updateBorders,
+    preferredFormat:'hex'
 });
 
 
@@ -217,6 +264,9 @@ $(".override").spectrum({
     change: updateBorders
 });
 
+$(".startEmpty").spectrum({ allowEmpty:true,
+    change: updateBorders });
+
 $("#beforeShow").spectrum({
     beforeShow: function() {
         return false;
@@ -229,6 +279,7 @@ $("#custom").spectrum({
 });
 
 $("#buttonText").spectrum({
+    allowEmpty:true,
     chooseText: "Alright",
     cancelText: "No way"
 });
@@ -275,7 +326,7 @@ $("#triggerSet").spectrum({
     change: updateBorders
 });
 
-// Show the original input to demonstrate the value changing when calling `set`
+//how the original input to demonstrate the value changing when calling `set`
 $("#triggerSet").show();
 
 $("#btnEnterAColor").click(function() {
