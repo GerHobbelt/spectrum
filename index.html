@@ -19,7 +19,7 @@
 <div id='header'>
     <h1><a href='http://bgrins.github.com/spectrum'>Spectrum</a></h1> <h2><em>The No Hassle jQuery Colorpicker</em></h2>
     <div id='links'>
-        <a href='http://github.com/bgrins/spectrum/zipball/1.1.0' class="btn btn-primary">Download Zip</a>
+        <a href='http://github.com/bgrins/spectrum/zipball/1.1.1' class="btn btn-primary">Download Zip</a>
         View the <a href='http://github.com/bgrins/spectrum'>Source code</a>.
         Spectrum is a project by <a href='http://twitter.com/bgrins'>@bgrins</a>.
     </div>
@@ -83,7 +83,7 @@
         <h3 class='point'>Devtools</h3>
 
         <p>
-            Believe it or not, <strong>this colorpicker lives inside of Chrome devtools</strong> to make picking colors easier for web developers and designers.
+            Believe it or not, <strong>this colorpicker lives inside of Chrome and Safari devtools</strong> to make picking colors easier for web developers and designers.
         </p>
 
         <p>
@@ -166,6 +166,11 @@ $("#flat").spectrum({
             <input type='text' id='flat' value="limegreen" />
         </div>
 
+<!--
+<div class="alert">
+    Heads up!  Make sure you do not have a <code>maxlength</code> property set on your input.  It has been known to break IE10.
+</div>
+-->
 
         <h2>Options</h2>
 <pre class='prettyprint'>
@@ -680,6 +685,21 @@ $("#picker").spectrum("disable");
                 <p>
                 Toggles the colorpicker.
                 </p>
+                <p class="warning">
+                <b>Warning:</b> If you are calling toggle from a click handler, make sure you <code>return false</code> to prevent the colorpicker from immediately hiding after it is toggled.
+                </p>
+            </div>
+
+            <pre class='prettyprint'>
+$("#btn-toggle").click(function() {
+    $("#toggle").spectrum("toggle");
+    return false;
+});
+            </pre>
+
+            <div class='example'>
+                <input type='text' value='blanchedalmond' name='toggle' id='toggle' />
+                <button id='btn-toggle'>Toggle</button>
             </div>
         </div>
 
@@ -861,6 +881,9 @@ t.toName()      // "red"
         <a href='http://bgrins.github.com/spectrum'>jQuery Colorpicker</a> |
         <a href='http://bgrins.github.com/spectrum'>Mobile Colorpicker</a> |
         <a href='http://bgrins.github.com/spectrum'>Spectrum colorpicker</a>
+        </p>
+        <p>
+        Thanks to all the <a href='https://github.com/bgrins/spectrum/graphs/contributors'>spectrum contributors</a> for committing code, documentation, and <a href='https://github.com/bgrins/spectrum/tree/master/i18n'>translations</a>.
         </p>
         <p>
         If you want to let me (<a href='http://twitter.com/bgrins'>@bgrins</a>) know you are using it, send me a link where it can be seen or add it to the <a href='https://github.com/bgrins/spectrum/wiki/Sites-Using-Spectrum'>list of projects using Spectrum</a>!
