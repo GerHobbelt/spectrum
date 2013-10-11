@@ -106,18 +106,18 @@
 
     function paletteTemplate (p, color, className) {
         var html = [];
+        var c;
         for (var i = 0; i < p.length; i++) {
-
             var current = p[i];
             if(current) {
                 var tiny = tinycolor(p[i]);
-                var c = tiny.toHsl().l < 0.5 ? "sp-thumb-el sp-thumb-dark" : "sp-thumb-el sp-thumb-light";
+                c = tiny.toHsl().l < 0.5 ? "sp-thumb-el sp-thumb-dark" : "sp-thumb-el sp-thumb-light";
                 c += (tinycolor.equals(color, p[i])) ? " sp-thumb-active" : "";
 
                 var swatchStyle = rgbaSupport ? ("background-color:" + tiny.toRgbString()) : "filter:" + tiny.toFilter();
                 html.push('<span title="' + tiny.toRgbString() + '" data-color="' + tiny.toRgbString() + '" class="' + c + '"><span class="sp-thumb-inner" style="' + swatchStyle + ';" /></span>');
             } else {
-                var c = 'sp-no-color';
+                c = 'sp-no-color';
                 html.push('<span title="No Color" data-color="" style="background-color:transparent;" class="' + c + '"></span>');
             }
         }
@@ -785,7 +785,7 @@
             colorOnShow = color;
 
             if (color) {
-                displayColor = color.toString(currentPreferredFormat)
+                displayColor = color.toString(currentPreferredFormat);
 
                 // Update the selection palette with the current color
                 addColorToSelectionPalette(color);
