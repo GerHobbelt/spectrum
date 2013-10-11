@@ -619,18 +619,19 @@
             }
         }
 
-        function get(opts) {
+        function get(options) {
             if (opts.allowEmpty && isEmpty) {
                 return null;
             }
 
-            opts = opts || { };
+            options = options || { };
+
             return tinycolor.fromRatio({
                 h: currentHue,
                 s: currentSaturation,
                 v: currentValue,
                 a: Math.round(currentAlpha * 100) / 100
-            }, { format: opts.format || currentPreferredFormat });
+            }, { format: options.format || currentPreferredFormat });
         }
 
         function isValid() {
@@ -1036,9 +1037,9 @@
     * Define a jQuery plugin
     */
     var dataID = "spectrum.id";
-    $.fn.spectrum = function (opts, extra) {
+    $.fn.spectrum = function (options, extra) {
 
-        if (typeof opts == "string") {
+        if (typeof options == "string") {
 
             var returnValue = this;
             var args = Array.prototype.slice.call( arguments, 1 );
@@ -1047,21 +1048,21 @@
                 var spect = spectrums[$(this).data(dataID)];
                 if (spect) {
 
-                    var method = spect[opts];
+                    var method = spect[options];
                     if (!method) {
-                        throw new Error( "Spectrum: no such method: '" + opts + "'" );
+                        throw new Error( "Spectrum: no such method: '" + options + "'" );
                     }
 
-                    if (opts == "get") {
+                    if (options == "get") {
                         returnValue = spect.get();
                     }
-                    else if (opts == "container") {
+                    else if (options == "container") {
                         returnValue = spect.container;
                     }
-                    else if (opts == "option") {
+                    else if (options == "option") {
                         returnValue = spect.option.apply(spect, args);
                     }
-                    else if (opts == "destroy") {
+                    else if (options == "destroy") {
                         spect.destroy();
                         $(this).removeData(dataID);
                     }
@@ -1076,7 +1077,7 @@
 
         // Initializing a new instance of spectrum
         return this.spectrum("destroy").each(function () {
-            var spect = spectrum(this, opts);
+            var spect = spectrum(this, options);
             $(this).data(dataID, spect.id);
         });
     };
@@ -1116,10 +1117,10 @@
         mathMax = math.max,
         mathRandom = math.random;
 
-    function tinycolor (color, opts) {
+    function tinycolor (color, options) {
 
         color = (color) ? color : '';
-        opts = opts || { };
+        options = options || { };
 
         // If input is already a tinycolor, return itself
         if (typeof color == "object" && color.hasOwnProperty("_tc_id")) {
@@ -1132,7 +1133,7 @@
             b = rgb.b,
             a = rgb.a,
             roundA = mathRound(100*a) / 100,
-            format = opts.format || rgb.format;
+            format = options.format || rgb.format;
 
         // Don't let the range of [0,255] come back in [0,1].
         // Potentially lose a little bit of precision here, but will fix issues where
@@ -1261,7 +1262,7 @@
 
     // If input is an object, force 1 into "1.0" to handle ratios properly
     // String input requires "1.0" as input, so 1 will be treated as 1
-    tinycolor.fromRatio = function(color, opts) {
+    tinycolor.fromRatio = function(color, options) {
         if (typeof color == "object") {
             var newColor = {};
             for (var i in color) {
@@ -1277,7 +1278,7 @@
             color = newColor;
         }
 
-        return tinycolor(color, opts);
+        return tinycolor(color, options);
     };
 
     // Given a string or object, convert that input to RGB
