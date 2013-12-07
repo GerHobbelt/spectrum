@@ -275,8 +275,8 @@ $(".override").spectrum({
     change: updateBorders
 });
 
-$(".startEmpty").spectrum({ 
-    allowEmpty: true, 
+$(".startEmpty").spectrum({
+    allowEmpty: true,
     change: updateBorders
 });
 
@@ -339,7 +339,7 @@ $("#triggerSet").spectrum({
     change: updateBorders
 });
 
-//how the original input to demonstrate the value changing when calling `set`
+// Show the original input to demonstrate the value changing when calling `set`
 $("#triggerSet").show();
 
 $("#btnEnterAColor").click(function() {

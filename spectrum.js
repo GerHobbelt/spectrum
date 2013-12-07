@@ -113,7 +113,7 @@
         var c;
         for (var i = 0; i < p.length; i++) {
             var current = p[i];
-            if(current) {
+            if (current) {
                 var tiny = tinycolor(current);
                 c = tiny.toHsl().l < 0.5 ? "sp-thumb-el sp-thumb-dark" : "sp-thumb-el sp-thumb-light";
                 c += (tinycolor.equals(color, current)) ? " sp-thumb-active" : "";
@@ -290,7 +290,7 @@
                 }
             });
 
-            if(boundElement.is(":disabled") || (opts.disabled === true)) {
+            if (boundElement.is(":disabled") || (opts.disabled === true)) {
                 disable();
             }
 
@@ -302,7 +302,11 @@
             textInput.bind("paste", function () {
                 setTimeout(setFromTextInput, 1);
             });
-            textInput.keydown(function (e) { if (e.keyCode == 13) { setFromTextInput(); } });
+            textInput.keydown(function (e) { 
+                if (e.keyCode == 13) { 
+                    setFromTextInput(); 
+                } 
+            });
 
             cancelButton.text(opts.cancelText);
             cancelButton.bind("click.spectrum", function (e) {
@@ -319,7 +323,7 @@
                isEmpty = true;
 
                 move();
-                if(flat) {
+                if (flat) {
                     //for the flat style, this is a change event
                     updateOriginalInput(true);
                 }
@@ -603,7 +607,7 @@
             if (tinycolor.equals(color, get())) {
                 return;
             }
-				
+
 			var newColor = { ok: false };
             if (!color && allowEmpty) {
                 isEmpty = true;
@@ -711,8 +715,8 @@
                 }
 
                 displayColor = realColor.toString(format);
-            }     
-			
+            }
+
             // Update the text entry input as it changes happen
             if (opts.showInput) {
                 textInput.val(displayColor);
@@ -721,11 +725,11 @@
             if (opts.showPalette) {
                 drawPalette();
             }
-            
-            if (opts.allowEmpty) {
+
+            if (allowEmpty) {
                 var noColorHeight = clearButton.height(),
                     padding = 8;
-                slider.css({"top": (noColorHeight + padding) +"px"});
+                slider.css({"top": (noColorHeight + padding) + "px"});
             }
 
             drawInitial();
@@ -735,7 +739,7 @@
             var s = currentSaturation;
             var v = currentValue;
 
-            if(allowEmpty && isEmpty) {
+            if (allowEmpty && isEmpty) {
                 //if selected color is empty, hide the helpers
                 alphaSlideHelper.hide();
                 slideHelper.hide();
@@ -781,7 +785,7 @@
                 displayColor = '',
                 hasChanged = !tinycolor.equals(color, colorOnShow);
 
-            if(color) {
+            if (color) {
                 displayColor = color.toString(currentPreferredFormat);
                 // Update the selection palette with the current color
                 addColorToSelectionPalette(color);
@@ -1389,7 +1393,7 @@
         var max = mathMax(r, g, b), min = mathMin(r, g, b);
         var h, s, l = (max + min) / 2;
 
-        if(max == min) {
+        if (max == min) {
             h = s = 0; // achromatic
         }
         else {
@@ -1419,15 +1423,15 @@
         l = bound01(l, 100);
 
         function hue2rgb(p, q, t) {
-            if(t < 0) t += 1;
-            if(t > 1) t -= 1;
-            if(t < 1/6) return p + (q - p) * 6 * t;
-            if(t < 1/2) return q;
-            if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1/6) return p + (q - p) * 6 * t;
+            if (t < 1/2) return q;
+            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
             return p;
         }
 
-        if(s === 0) {
+        if (s === 0) {
             r = g = b = l; // achromatic
         }
         else {
@@ -1457,7 +1461,7 @@
         var d = max - min;
         s = max === 0 ? 0 : d / max;
 
-        if(max == min) {
+        if (max == min) {
             h = 0; // achromatic
         }
         else {
