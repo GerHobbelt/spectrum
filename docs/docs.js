@@ -10,6 +10,7 @@ function updateBorders(color) {
 $(function() {
 
 $("#full").spectrum({
+    allowEmpty:true,
     color: "#ECC",
     showInput: true,
     className: "full-spectrum",
@@ -157,6 +158,7 @@ $("#showAlphaWithInput").spectrum({
     ],
     change: updateBorders
 });
+
 $("#showAlphaWithInputAndEmpty").spectrum({
     color: "rgba(255, 128, 0, .5)",
     allowEmpty:true,
@@ -241,13 +243,18 @@ $("#showInputAndInitial").spectrum({
 });
 
 $("#showInputInitialClear").spectrum({
-    allowEmpty:true,
+    allowEmpty: true,
     showInitial: true,
     showInput: true,
     change: updateBorders,
-    preferredFormat:'hex'
+    preferredFormat: 'hex'
 });
 
+$("#showInputInitialClear").spectrum({
+    allowEmpty: true,
+    showInitial: true,
+    showInput: true
+});
 
 $("#changeOnMove").spectrum({
     move: function(c) {
@@ -268,8 +275,10 @@ $(".override").spectrum({
     change: updateBorders
 });
 
-$(".startEmpty").spectrum({ allowEmpty:true,
-    change: updateBorders });
+$(".startEmpty").spectrum({ 
+    allowEmpty: true, 
+    change: updateBorders
+});
 
 $("#beforeShow").spectrum({
     beforeShow: function() {

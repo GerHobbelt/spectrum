@@ -1,4 +1,4 @@
-// Spectrum Colorpicker v1.1.2
+// Spectrum Colorpicker v1.2.0
 // https://github.com/bgrins/spectrum
 // Author: Brian Grinstead
 // License: MIT
@@ -49,6 +49,10 @@
         style.cssText = 'background-color:rgba(0,0,0,.5)';
         return contains(style.backgroundColor, 'rgba') || contains(style.backgroundColor, 'hsla');
     })(),
+    inputTypeColorSupport = (function() {
+        var colorInput = $("<input type='color' value='!' />")[0];
+        return colorInput.type === "color" && colorInput.value !== "!";
+    })(),
     replaceInput = [
         "<div class='sp-replacer'>",
             "<div class='sp-preview'><div class='sp-preview-inner'></div></div>",
@@ -82,7 +86,7 @@
                                     "</div>",
                                 "</div>",
                             "</div>",
-                            "<div class='sp-no-color' title='Clear Color Selection'>",
+                            "<div class='sp-clear sp-clear-display' title='Clear Color Selection'>",
                             "</div>",
                             "<div class='sp-hue'>",
                                 "<div class='sp-slider'></div>",
@@ -110,15 +114,15 @@
         for (var i = 0; i < p.length; i++) {
             var current = p[i];
             if(current) {
-                var tiny = tinycolor(p[i]);
+                var tiny = tinycolor(current);
                 c = tiny.toHsl().l < 0.5 ? "sp-thumb-el sp-thumb-dark" : "sp-thumb-el sp-thumb-light";
-                c += (tinycolor.equals(color, p[i])) ? " sp-thumb-active" : "";
+                c += (tinycolor.equals(color, current)) ? " sp-thumb-active" : "";
 
                 var swatchStyle = rgbaSupport ? ("background-color:" + tiny.toRgbString()) : "filter:" + tiny.toFilter();
                 html.push('<span title="' + tiny.toRgbString() + '" data-color="' + tiny.toRgbString() + '" class="' + c + '"><span class="sp-thumb-inner" style="' + swatchStyle + ';" /></span>');
             } else {
-                c = 'sp-no-color';
-                html.push('<span title="No Color" data-color="" style="background-color:transparent;" class="' + c + '"></span>');
+                var cls = 'sp-clear-display';
+                html.push('<span title="No Color Selected" data-color="" style="background-color:transparent;" class="' + cls + '"></span>');
             }
         }
         return "<div class='sp-cf " + className + "'>" + html.join('') + "</div>";
@@ -190,9 +194,10 @@
             paletteContainer = container.find(".sp-palette"),
             initialColorContainer = container.find(".sp-initial"),
             cancelButton = container.find(".sp-cancel"),
-            clearButton = container.find(".sp-top-inner .sp-no-color"),
+            clearButton = container.find(".sp-clear"),
             chooseButton = container.find(".sp-choose"),
             isInput = boundElement.is("input"),
+            isInputTypeColor = isInput && inputTypeColorSupport && boundElement.attr("type") === "color",
             shouldReplace = isInput && !flat,
             replacer = (shouldReplace) ? $(replaceInput).addClass(theme).addClass(opts.className) : $([]),
             offsetElement = (shouldReplace) ? replacer : boundElement,
@@ -202,8 +207,8 @@
             preferredFormat = opts.preferredFormat,
             currentPreferredFormat = preferredFormat,
             clickoutFiresChange = !opts.showButtons || opts.clickoutFiresChange,
-            isEmpty = !initialColor;
-
+            isEmpty = !initialColor,
+            allowEmpty = opts.allowEmpty && !isInputTypeColor;
 
         function applyOptions() {
 
@@ -214,6 +219,7 @@
             container.toggleClass("sp-flat", flat);
             container.toggleClass("sp-input-disabled", !opts.showInput);
             container.toggleClass("sp-alpha-enabled", opts.showAlpha);
+            container.toggleClass("sp-clear-enabled", allowEmpty);
             container.toggleClass("sp-buttons-disabled", !opts.showButtons);
             container.toggleClass("sp-palette-disabled", !opts.showPalette);
             container.toggleClass("sp-palette-only", opts.showPaletteOnly);
@@ -235,7 +241,7 @@
                 boundElement.after(replacer).hide();
             }
 
-            if (!opts.allowEmpty) {
+            if (!allowEmpty) {
                 clearButton.hide();
             }
 
@@ -312,8 +318,8 @@
 
                isEmpty = true;
 
-                updateUI();
-                if (flat) {
+                move();
+                if(flat) {
                     //for the flat style, this is a change event
                     updateOriginalInput(true);
                 }
@@ -367,8 +373,9 @@
                 }
                 if (setValue) {
                     currentValue = parseFloat((dragHeight - dragY) / dragHeight);
-                    isEmpty = false;
 				}
+
+                isEmpty = false;
 
                 move();
 
@@ -498,7 +505,7 @@
 
             var value = textInput.val();
 
-            if ((value === null || value === "") && opts.allowEmpty) {
+            if ((value === null || value === "") && allowEmpty) {
                 set(null);
             }
             else {
@@ -598,7 +605,7 @@
             }
 				
 			var newColor = { ok: false };
-            if (!color && opts.allowEmpty) {
+            if (!color && allowEmpty) {
                 isEmpty = true;
             } else {
                 isEmpty = false;
@@ -613,17 +620,17 @@
 
             updateUI();
 
-            if (newColor.ok && !ignoreFormatChange) {
+            if (newColor && newColor.ok && !ignoreFormatChange) {
                 currentPreferredFormat = preferredFormat || newColor.format;
             }
         }
 
         function get(options) {
-            if (opts.allowEmpty && isEmpty) {
+            options = options || { };
+
+            if (allowEmpty && isEmpty) {
                 return null;
             }
-
-            options = options || { };
 
             return tinycolor.fromRatio({
                 h: currentHue,
@@ -663,19 +670,20 @@
             }
 
             var realColor = get({ format: format }),
-                displayColor = '',
-                realHex = realColor.toHexString(),
-                realRgb = realColor.toRgbString();
+                displayColor = '';
 
             //reset background info for preview element
-            previewElement.removeClass("sp-no-color");
+            previewElement.removeClass("sp-clear-display");
             previewElement.css('background-color', 'transparent');
 
-            if (!realColor && opts.allowEmpty) {
+            if (!realColor && allowEmpty) {
                 // Update the replaced elements background with icon indicating no color selection
-                previewElement.addClass("sp-no-color");
-            } 
+                previewElement.addClass("sp-clear-display");
+            }
             else {
+               var realHex = realColor.toHexString(),
+                    realRgb = realColor.toRgbString();
+
                 // Update the replaced elements background color (with actual selected color)
                 if (rgbaSupport || realColor.alpha === 1) {
                     previewElement.css("background-color", realRgb);
@@ -702,16 +710,7 @@
                     }
                 }
 
-                //if (opts.showInput) {
-                //    if (currentAlpha < 1) {
-                //        if (format === "hex" || format === "name") {
-                //            format = "rgb";
-                //        }
-                //    }
-                //}
-
                 displayColor = realColor.toString(format);
-
             }     
 			
             // Update the text entry input as it changes happen
@@ -736,7 +735,7 @@
             var s = currentSaturation;
             var v = currentValue;
 
-            if(opts.allowEmpty && isEmpty) {
+            if(allowEmpty && isEmpty) {
                 //if selected color is empty, hide the helpers
                 alphaSlideHelper.hide();
                 slideHelper.hide();
@@ -781,12 +780,9 @@
             var color = get(),
                 displayColor = '',
                 hasChanged = !tinycolor.equals(color, colorOnShow);
-                
-            colorOnShow = color;
 
-            if (color) {
+            if(color) {
                 displayColor = color.toString(currentPreferredFormat);
-
                 // Update the selection palette with the current color
                 addColorToSelectionPalette(color);
             }
@@ -794,6 +790,8 @@
             if (isInput) {
                 boundElement.val(displayColor);
             }
+
+            colorOnShow = color;
 
             if (fireCallback && hasChanged) {
                 callbacks.change(color);
@@ -1109,10 +1107,7 @@
     $.spectrum.palettes = { };
 
     $.fn.spectrum.processNativeColorInputs = function () {
-        var colorInput = $("<input type='color' value='!' />")[0];
-        var supportsColor = colorInput.type === "color" && colorInput.value != "!";
-
-        if (!supportsColor) {
+        if (!inputTypeColorSupport) {
             $("input[type=color]").spectrum({
                 preferredFormat: "hex6"
             });
