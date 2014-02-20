@@ -1,4 +1,4 @@
-// Spectrum Colorpicker v1.3.0
+// Spectrum Colorpicker v1.3.1
 // https://github.com/bgrins/spectrum
 // Author: Brian Grinstead
 // License: MIT
@@ -352,7 +352,7 @@
                 }
 
                 move();
-            });
+            }, dragStart, dragStop);
 
             draggable(slider, function (dragX, dragY) {
                 currentHue = parseFloat(dragY / slideHeight);
@@ -1141,7 +1141,7 @@
         }
     };
 
-    // TinyColor v0.9.16
+    // TinyColor v0.9.17
     // https://github.com/bgrins/TinyColor
     // 2013-08-10, Brian Grinstead, MIT License
 
@@ -1220,7 +1220,13 @@
                 return rgbToHex(r, g, b, allow3Char);
             },
             toHexString: function(allow3Char) {
-                return '#' + rgbToHex(r, g, b, allow3Char);
+                return '#' + this.toHex(allow3Char);
+            },
+            toHex8: function() {
+                return rgbaToHex(r, g, b, a);
+            },
+            toHex8String: function() {
+                return '#' + this.toHex8();
             },
             toRgb: function() {
                 return { r: mathRound(r), g: mathRound(g), b: mathRound(b), a: a };
@@ -1246,19 +1252,16 @@
                 return hexNames[rgbToHex(r, g, b, true)] || false;
             },
             toFilter: function(secondColor) {
-                var hex = rgbToHex(r, g, b);
-                var secondHex = hex;
-                var alphaHex = Math.round(parseFloat(a) * 255).toString(16);
-                var secondAlphaHex = alphaHex;
+                var hex8String = '#' + rgbaToHex(r, g, b, a);
+                var secondHex8String = hex8String;
                 var gradientType = opts && opts.gradientType ? "GradientType = 1, " : "";
 
                 if (secondColor) {
                     var s = tinycolor(secondColor);
-                    secondHex = s.toHex();
-                    secondAlphaHex = Math.round(parseFloat(s.alpha) * 255).toString(16);
+                    secondHex8String = s.toHex8String();
                 }
 
-                return "progid:DXImageTransform.Microsoft.gradient("+gradientType+"startColorstr=#" + pad2(alphaHex) + hex + ",endColorstr=#" + pad2(secondAlphaHex) + secondHex + ")";
+                return "progid:DXImageTransform.Microsoft.gradient("+gradientType+"startColorstr="+hex8String+",endColorstr="+secondHex8String+")";
             },
             toString: function(format) {
                 var formatSet = !!format;
@@ -1279,6 +1282,9 @@
                 }
                 if (format === "hex3") {
                     formattedString = this.toHexString(true);
+                }
+                if (format === "hex8") {
+                    formattedString = this.toHex8String();
                 }
                 if (format === "name") {
                     formattedString = this.toName();
@@ -1326,6 +1332,7 @@
     //     "red"
     //     "#f00" or "f00"
     //     "#ff0000" or "ff0000"
+    //     "#ff000000" or "ff000000"
     //     "rgb 255 0 0" or "rgb (255, 0, 0)"
     //     "rgb 1.0 0 0" or "rgb (1, 0, 0)"
     //     "rgba (255, 0, 0, 1)" or "rgba 255, 0, 0, 1"
@@ -1540,6 +1547,21 @@
 
         return hex.join("");
     }
+        // `rgbaToHex`
+        // Converts an RGBA color plus alpha transparency to hex
+        // Assumes r, g, b and a are contained in the set [0, 255]
+        // Returns an 8 character hex
+        function rgbaToHex(r, g, b, a) {
+
+            var hex = [
+                pad2(convertDecimalToHex(a)),
+                pad2(mathRound(r).toString(16)),
+                pad2(mathRound(g).toString(16)),
+                pad2(mathRound(b).toString(16))
+            ];
+
+            return hex.join("");
+        }
 
     // `equals`
     // Can be called with any tinycolor input
@@ -1936,8 +1958,8 @@
         return mathMin(1, mathMax(0, val));
     }
 
-    // Parse an integer into hex
-    function parseHex(val) {
+    // Parse a base-16 hex value into a base-10 integer
+    function parseIntFromHex(val) {
         return parseInt(val, 16);
     }
 
@@ -1966,6 +1988,15 @@
         return n;
     }
 
+    // Converts a decimal to a hex value
+    function convertDecimalToHex(d) {
+        return Math.round(parseFloat(d) * 255).toString(16);
+    }
+    // Converts a hex value to a decimal
+    function convertHexToDecimal(h) {
+        return (parseIntFromHex(h) / 255);
+    }
+
     var matchers = (function() {
 
         // <http://www.w3.org/TR/css3-values/#integers>
@@ -1990,7 +2021,8 @@
             hsla: new RegExp("hsla" + PERMISSIVE_MATCH4),
             hsv: new RegExp("hsv" + PERMISSIVE_MATCH3),
             hex3: /^([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
-            hex6: /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/
+            hex6: /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
+            hex8: /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/
         };
     })();
 
@@ -2029,19 +2061,28 @@
         if ((match = matchers.hsv.exec(color))) {
             return { h: match[1], s: match[2], v: match[3] };
         }
+        if ((match = matchers.hex8.exec(color))) {
+            return {
+                a: convertHexToDecimal(match[1]),
+                r: parseIntFromHex(match[2]),
+                g: parseIntFromHex(match[3]),
+                b: parseIntFromHex(match[4]),
+                format: named ? "name" : "hex8"
+            };
+        }
         if ((match = matchers.hex6.exec(color))) {
             return {
-                r: parseHex(match[1]),
-                g: parseHex(match[2]),
-                b: parseHex(match[3]),
+                r: parseIntFromHex(match[1]),
+                g: parseIntFromHex(match[2]),
+                b: parseIntFromHex(match[3]),
                 format: named ? "name" : "hex"
             };
         }
         if ((match = matchers.hex3.exec(color))) {
             return {
-                r: parseHex(match[1] + '' + match[1]),
-                g: parseHex(match[2] + '' + match[2]),
-                b: parseHex(match[3] + '' + match[3]),
+                r: parseIntFromHex(match[1] + '' + match[1]),
+                g: parseIntFromHex(match[2] + '' + match[2]),
+                b: parseIntFromHex(match[3] + '' + match[3]),
                 format: named ? "name" : "hex"
             };
         }
