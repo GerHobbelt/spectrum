@@ -31,7 +31,9 @@
         chooseText: "choose",
         clearText: "Clear Color Selection",
         preferredFormat: false,
-        className: "",
+        className: "", // Deprecated - use containerClassName and replacerClassName instead.
+        containerClassName: "",
+        replacerClassName: "",
         showAlpha: false,
         theme: "sp-light",
         palette: [["#ffffff", "#000000", "#ff0000", "#ff8000", "#ffff00", "#008000", "#0000ff", "#4b0082", "#9400d3"]],
@@ -109,7 +111,7 @@
         ].join("");
     })();
 
-    function paletteTemplate (p, color, className) {
+    function paletteTemplate (p, color, className, tooltipFormat) {
         var html = [];
         var c;
         for (var i = 0; i < p.length; i++) {
@@ -119,8 +121,9 @@
                 c = tiny.toHsl().l < 0.5 ? "sp-thumb-el sp-thumb-dark" : "sp-thumb-el sp-thumb-light";
                 c += (tinycolor.equals(color, current)) ? " sp-thumb-active" : "";
 
+                var formattedString = tiny.toString(tooltipFormat || "rgb");
                 var swatchStyle = rgbaSupport ? ("background-color:" + tiny.toRgbString()) : "filter:" + tiny.toFilter();
-                html.push('<span title="' + tiny.toRgbString() + '" data-color="' + tiny.toRgbString() + '" class="' + c + '"><span class="sp-thumb-inner" style="' + swatchStyle + ';" /></span>');
+                html.push('<span title="' + formattedString + '" data-color="' + tiny.toRgbString() + '" class="' + c + '"><span class="sp-thumb-inner" style="' + swatchStyle + ';" /></span>');
             } else {
                 var cls = 'sp-clear-display';
                 html.push('<span title="No Color Selected" data-color="" style="background-color:transparent;" class="' + cls + '"></span>');
@@ -201,7 +204,7 @@
             isInput = boundElement.is("input"),
             isInputTypeColor = isInput && inputTypeColorSupport && boundElement.attr("type") === "color",
             shouldReplace = isInput && !flat,
-            replacer = (shouldReplace) ? $(replaceInput).addClass(theme).addClass(opts.className) : $([]),
+            replacer = (shouldReplace) ? $(replaceInput).addClass(theme).addClass(opts.className).addClass(opts.replacerClassName) : $([]),
             offsetElement = (shouldReplace) ? replacer : boundElement,
             previewElement = replacer.find(".sp-preview-inner"),
             initialColor = opts.color || (isInput && boundElement.val()),
@@ -238,7 +241,7 @@
             container.toggleClass("sp-palette-disabled", !opts.showPalette);
             container.toggleClass("sp-palette-only", opts.showPaletteOnly);
             container.toggleClass("sp-initial-disabled", !opts.showInitial);
-            container.addClass(opts.className);
+            container.addClass(opts.className).addClass(opts.containerClassName);
 
             reflow();
         }
@@ -490,13 +493,13 @@
             var currentColor = get();
 
             var html = $.map(paletteArray, function (palette, i) {
-                return paletteTemplate(palette, currentColor, "sp-palette-row sp-palette-row-" + i);
+                return paletteTemplate(palette, currentColor, "sp-palette-row sp-palette-row-" + i, opts.preferredFormat);
             });
 
             updateSelectionPaletteFromStorage();
 
             if (selectionPalette) {
-                html.push(paletteTemplate(getUniqueSelectionPalette(), currentColor, "sp-palette-row sp-palette-row-selection"));
+                html.push(paletteTemplate(getUniqueSelectionPalette(), currentColor, "sp-palette-row sp-palette-row-selection", opts.preferredFormat));
             }
 
             paletteContainer.html(html.join(""));
@@ -506,7 +509,7 @@
             if (opts.showInitial) {
                 var initial = colorOnShow;
                 var current = get();
-                initialColorContainer.html(paletteTemplate([initial, current], current, "sp-palette-row-initial"));
+                initialColorContainer.html(paletteTemplate([initial, current], current, "sp-palette-row-initial", opts.preferredFormat));
             }
         }
 

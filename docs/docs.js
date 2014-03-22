@@ -13,7 +13,7 @@ $("#full").spectrum({
     allowEmpty:true,
     color: "#ECC",
     showInput: true,
-    className: "full-spectrum",
+    containerClassName: "full-spectrum",
     showInitial: true,
     showPalette: true,
     showSelectionPalette: true,
@@ -201,6 +201,14 @@ $("#className").spectrum({
     className: 'awesome'
 });
 
+$("#replacerClassName").spectrum({
+    replacerClassName: 'awesome'
+});
+
+$("#containerClassName").spectrum({
+    containerClassName: 'awesome'
+});
+
 $("#showPalette").spectrum({
     showPalette: true,
     palette: [
@@ -355,26 +363,38 @@ $("#showSelectionPaletteStorage2").spectrum({
 
 $("#preferredHex").spectrum({
     preferredFormat: "hex",
-    showInput: true
+    showInput: true,
+    showPalette: true,
+    palette: [["red", "rgba(0, 255, 0, .5)", "rgb(0, 0, 255)"]]
 });
-$("#preferredHex6").spectrum({
-    preferredFormat: "hex6",
-    showInput: true
+$("#preferredHex3").spectrum({
+    preferredFormat: "hex3",
+    showInput: true,
+    showPalette: true,
+    palette: [["red", "rgba(0, 255, 0, .5)", "rgb(0, 0, 255)"]]
 });
 $("#preferredHsl").spectrum({
     preferredFormat: "hsl",
-    showInput: true
+    showInput: true,
+    showPalette: true,
+    palette: [["red", "rgba(0, 255, 0, .5)", "rgb(0, 0, 255)"]]
 });
 $("#preferredRgb").spectrum({
     preferredFormat: "rgb",
-    showInput: true
+    showInput: true,
+    showPalette: true,
+    palette: [["red", "rgba(0, 255, 0, .5)", "rgb(0, 0, 255)"]]
 });
 $("#preferredName").spectrum({
     preferredFormat: "name",
-    showInput: true
+    showInput: true,
+    showPalette: true,
+    palette: [["red", "rgba(0, 255, 0, .5)", "rgb(0, 0, 255)"]]
 });
 $("#preferredNone").spectrum({
-    showInput: true
+    showInput: true,
+    showPalette: true,
+    palette: [["red", "rgba(0, 255, 0, .5)", "rgb(0, 0, 255)"]]
 });
 
 $("#triggerSet").spectrum({
