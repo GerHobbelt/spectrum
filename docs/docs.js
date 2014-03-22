@@ -345,6 +345,12 @@ $("#showSelectionPaletteStorage").spectrum({
     showSelectionPalette: true,
     palette: [ ]
 });
+$("#showSelectionPaletteStorage2").spectrum({
+    showPalette: true,
+    localStorageKey: "spectrum.homepage", // Any picker with the same string will share selection
+    showSelectionPalette: true,
+    palette: [ ]
+});
 
 
 $("#preferredHex").spectrum({
@@ -381,7 +387,6 @@ $("#triggerSet").show();
 $("#btnEnterAColor").click(function() {
     $("#triggerSet").spectrum("set", $("#enterAColor").val());
 });
-
 
 $("#toggle").spectrum();
 $("#btn-toggle").click(function() {
