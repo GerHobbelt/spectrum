@@ -1125,8 +1125,8 @@
 
         // Initializing a new instance of spectrum
         return this.spectrum("destroy").each(function () {
-            var options = $.extend({}, options, $(this).data());
-            var spect = spectrum(this, options);
+            var options_clone = $.extend({}, options, $(this).data());
+            var spect = spectrum(this, options_clone);
             $(this).data(dataID, spect.id);
         });
     };
