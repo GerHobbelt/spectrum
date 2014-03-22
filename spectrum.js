@@ -378,7 +378,7 @@
                 }
                 if (setValue) {
                     currentValue = parseFloat((dragHeight - dragY) / dragHeight);
-				}
+                }
 
                 isEmpty = false;
                 if (!opts.showAlpha) {
@@ -460,16 +460,12 @@
                     }
                 }
 
-               try//Cookies disabled issues
-                {
-                    if (localStorageKey && window.localStorage)
-                    {
-
+                if (localStorageKey && window.localStorage) {
+                    try {
                         window.localStorage[localStorageKey] = selectionPalette.join(";");
                     }
-
+                    catch(e) { }
                 }
-                catch (e) { }
             }
         }
 
