@@ -3,7 +3,29 @@
 // Author: Brian Grinstead
 // License: MIT
 
-(function (window, $, tinycolor, undefined) {
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(['jquery', 'tinycolor'], function (jQuery, tinycolor) {
+            return factory(root, jQuery, tinycolor);
+        });
+    } else if (typeof exports === 'object') {
+        // Node. Does not work with strict CommonJS, but
+        // only CommonJS-like environments that support module.exports,
+        // like Node.
+        module.exports = factory(root, require('jquery'), require('tinycolor'));
+    } else {
+        // Browser globals
+        root.spectrum = factory(root, root.jQuery, root.tinycolor);
+    }
+}(this, function (window, $, tinycolor, undefined) {
+
+
+    if (!tinycolor) {
+        throw new Error('spectrum requires TinyColor to be loaded');
+    }
+    
+
     var defaultOpts = {
 
         // Callbacks
@@ -1154,4 +1176,6 @@
         }
     });
 
-})(window, jQuery, tinycolor);
+
+    return $.fn.spectrum;
+}));
