@@ -19,7 +19,7 @@
         root.spectrum = factory(root, root.jQuery, root.tinycolor);
     }
 }(this, function (window, $, tinycolor, undefined) {
-
+    "use strict";
 
     if (!tinycolor) {
         throw new Error('spectrum requires TinyColor to be loaded');
@@ -52,6 +52,7 @@
         cancelText: "cancel",
         chooseText: "choose",
         clearText: "Clear Color Selection",
+        noColorSelectedText: "No Color Selected",
         preferredFormat: false,
         className: "", // Deprecated - use containerClassName and replacerClassName instead.
         containerClassName: "",
@@ -133,7 +134,7 @@
         ].join("");
     })();
 
-    function paletteTemplate (p, color, className, tooltipFormat) {
+    function paletteTemplate (p, color, className, opts) {
         var html = [];
         var c;
         for (var i = 0; i < p.length; i++) {
@@ -142,13 +143,17 @@
                 var tiny = tinycolor(current);
                 c = tiny.toHsl().l < 0.5 ? "sp-thumb-el sp-thumb-dark" : "sp-thumb-el sp-thumb-light";
                 c += (tinycolor.equals(color, current)) ? " sp-thumb-active" : "";
-
-                var formattedString = tiny.toString(tooltipFormat || "rgb");
+                var formattedString = tiny.toString(opts.preferredFormat || "rgb");
                 var swatchStyle = rgbaSupport ? ("background-color:" + tiny.toRgbString()) : "filter:" + tiny.toFilter();
                 html.push('<span title="' + formattedString + '" data-color="' + tiny.toRgbString() + '" class="' + c + '"><span class="sp-thumb-inner" style="' + swatchStyle + ';" /></span>');
             } else {
                 var cls = 'sp-clear-display';
-                html.push('<span title="No Color Selected" data-color="" style="background-color:transparent;" class="' + cls + '"></span>');
+                html.push($('<div />')
+                    .append($('<span data-color="" style="background-color:transparent;" class="' + cls + '"></span>')
+                        .attr('title', opts.noColorSelectedText)
+                    )
+                    .html()
+                );
             }
         }
         return "<div class='sp-cf " + className + "'>" + html.join('') + "</div>";
@@ -429,13 +434,13 @@
                 show();
             }
 
-            function palletElementClick(e) {
+            function paletteElementClick(e) {
                 if (e.data && e.data.ignore) {
-                    set($(this).data("color"));
+                    set($(e.target).closest(".sp-thumb-el").data("color"));
                     move();
                 }
                 else {
-                    set($(this).data("color"));
+                    set($(e.target).closest(".sp-thumb-el").data("color"));
                     move();
                     updateOriginalInput(true);
                     hide();
@@ -445,8 +450,8 @@
             }
 
             var paletteEvent = IE ? "mousedown.spectrum" : "click.spectrum touchstart.spectrum";
-            paletteContainer.delegate(".sp-thumb-el", paletteEvent, palletElementClick);
-            initialColorContainer.delegate(".sp-thumb-el:nth-child(1)", paletteEvent, { ignore: true }, palletElementClick);
+            paletteContainer.delegate(".sp-thumb-el", paletteEvent, paletteElementClick);
+            initialColorContainer.delegate(".sp-thumb-el:nth-child(1)", paletteEvent, { ignore: true }, paletteElementClick);
         }
 
         function updateSelectionPaletteFromStorage() {
@@ -494,7 +499,7 @@
         function getUniqueSelectionPalette() {
             var unique = [];
             if (opts.showPalette) {
-                for (i = 0; i < selectionPalette.length; i++) {
+                for (var i = 0; i < selectionPalette.length; i++) {
                     var rgb = tinycolor(selectionPalette[i]).toRgbString();
 
                     if (!paletteLookup[rgb]) {
@@ -511,13 +516,13 @@
             var currentColor = get();
 
             var html = $.map(paletteArray, function (palette, i) {
-                return paletteTemplate(palette, currentColor, "sp-palette-row sp-palette-row-" + i, opts.preferredFormat);
+                return paletteTemplate(palette, currentColor, "sp-palette-row sp-palette-row-" + i, opts);
             });
 
             updateSelectionPaletteFromStorage();
 
             if (selectionPalette) {
-                html.push(paletteTemplate(getUniqueSelectionPalette(), currentColor, "sp-palette-row sp-palette-row-selection", opts.preferredFormat));
+                html.push(paletteTemplate(getUniqueSelectionPalette(), currentColor, "sp-palette-row sp-palette-row-selection", opts));
             }
 
             paletteContainer.html(html.join(""));
@@ -527,7 +532,7 @@
             if (opts.showInitial) {
                 var initial = colorOnShow;
                 var current = get();
-                initialColorContainer.html(paletteTemplate([initial, current], current, "sp-palette-row-initial", opts.preferredFormat));
+                initialColorContainer.html(paletteTemplate([initial, current], current, "sp-palette-row-initial", opts));
             }
         }
 
@@ -555,7 +560,7 @@
             }
             else {
                 var tiny = tinycolor(value);
-                if (tiny.ok) {
+                if (tiny.isValid()) {
                     set(tiny);
                     updateOriginalInput(true);
                 }
@@ -667,8 +672,8 @@
 
             updateUI();
 
-            if (newColor && newColor.ok && !ignoreFormatChange) {
-                currentPreferredFormat = preferredFormat || newColor.format;
+            if (newColor && newColor.isValid() && !ignoreFormatChange) {
+                currentPreferredFormat = preferredFormat || newColor.getFormat();
             }
         }
 
@@ -1101,8 +1106,6 @@
             if (debounce || !timeout) timeout = setTimeout(throttler, wait);
         };
     }
-
-    function log(){/* jshint -W021 */if(window.console){if(Function.prototype.bind)log=Function.prototype.bind.call(console.log,console);else log=function(){Function.prototype.apply.call(console.log,console,arguments);};log.apply(this,arguments);}}
 
     /**
     * Define a jQuery plugin
