@@ -254,6 +254,8 @@
 
         function initialize() {
 
+            var appendTo;
+            
             if (IE) {
                 container.find("*:not(input)").attr("unselectable", "on");
             }
@@ -273,7 +275,8 @@
             }
             else {
 
-                var appendTo = opts.appendTo === "parent" ? boundElement.parent() : $(opts.appendTo);
+                appendTo = opts.appendTo === "parent" ? boundElement.parent() : $(opts.appendTo);
+                
                 if (appendTo.length !== 1) {
                     appendTo = $("body");
                 }
@@ -348,7 +351,7 @@
                 }
 
                 move();
-            }, dragStart, dragStop);
+            }, dragStart, dragStop, appendTo);
 
             draggable(slider, function (dragX, dragY) {
                 currentHue = parseFloat(dragY / slideHeight);
@@ -357,7 +360,7 @@
                     currentAlpha = 1;
                 }
                 move();
-            }, dragStart, dragStop);
+            }, dragStart, dragStop, appendTo);
 
             draggable(dragger, function (dragX, dragY, e) {
 
@@ -390,7 +393,7 @@
 
                 move();
 
-            }, dragStart, dragStop);
+            }, dragStart, dragStop, appendTo);
 
             if (!!initialColor) {
                 set(initialColor);
@@ -957,11 +960,11 @@
     * Lightweight drag helper.  Handles containment within the element, so that
     * when dragging, the x is within [0,element.width] and y is within [0,element.height]
     */
-    function draggable(element, onmove, onstart, onstop) {
+    function draggable(element, onmove, onstart, onstop, baseElement) {
         onmove = onmove || function () { };
         onstart = onstart || function () { };
         onstop = onstop || function () { };
-        var doc = element.ownerDocument || document;
+        var doc = (baseElement !== undefined) ? $(baseElement) : $('body'); // element.ownerDocument || document;
         var dragging = false;
         var offset = {};
         var maxHeight = 0;
@@ -1019,7 +1022,7 @@
                     offset = $(element).offset();
 
                     $(doc).bind(duringDragEvents);
-                    $(doc.body).addClass("sp-dragging");
+                    $(doc).addClass("sp-dragging");
 
                     if (!hasTouch) {
                         move(e);
@@ -1033,7 +1036,7 @@
         function stop() {
             if (dragging) {
                 $(doc).unbind(duringDragEvents);
-                $(doc.body).removeClass("sp-dragging");
+                $(doc).removeClass("sp-dragging");
                 onstop.apply(element, arguments);
             }
             dragging = false;
