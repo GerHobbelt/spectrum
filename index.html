@@ -196,6 +196,7 @@ $("#picker").spectrum({
     showPalette: bool,
     showPaletteOnly: bool,
     showSelectionPalette: bool,
+    clearText: string,
     clickoutFiresChange: bool,
     cancelText: string,
     chooseText: string,
@@ -222,6 +223,9 @@ $("#picker").spectrum({
                 The color parsing is based on the <a href='https://github.com/bgrins/TinyColor'>TinyColor</a> plugin.
                 This should parse any color string you throw at it.</p>
                 </p>
+                <p>
+                    When a color value is not set, and <code>allowEmpty</code> is set to <code>true</code>, the color picker will initialize with no color set.
+                </p>
             </div>
 
             <pre class='prettyprint'>
@@ -240,7 +244,7 @@ $(".basic").spectrum();
 $(".override").spectrum({
     color: "yellow"
 });
-(".startEmpty").spectrum({
+$(".startEmpty").spectrum({
     allowEmpty: true
 });
 &lt;/script&gt;
@@ -272,7 +276,7 @@ $("#showInputWithClear").spectrum({
             </pre>
             <div class='example'>
                 <input type='text' name='showInput' id='showInput' />
-                 <br/>
+                <br/>
                 <input type='text' name='showInputWithClear' id='showInputWithClear' value='' />
             </div>
         </div>
@@ -292,6 +296,9 @@ $("#showAlpha").spectrum({
             </div>
             <div class='example'>
                 <input type='text' name='showAlphaWithInput' id='showAlphaWithInput' />
+            </div>
+            <div class='example'>
+                <input type='text' name='showAlphaWithInputAndEmpty' id='showAlphaWithInputAndEmpty' />
             </div>
         </div>
 
@@ -450,7 +457,8 @@ $("#showInputAndInitial").spectrum({
                     <input type='text' name='showInputAndInitial' id='showInputAndInitial' value='goldenrod' />
             </div>
         </div>
-         <h3>Show Input, Initial, and Clear</h3>
+		
+		<h3>Show Input, Initial, and Clear</h3>
         <div class='option-content'>
             <div class='description'>
                 <p>If you specify both the <code>showInput</code>, <code>showInitial</code>, and <code>allowEmpty</code> options, the CSS keeps things in order by wrapping the buttons to the bottom row, and shrinking the input.   <em>Note: this is all customizable via CSS.</em></p>
@@ -467,10 +475,11 @@ $("#showInputInitialClear").spectrum({
                     <input type='text' name='showInputInitialClear' id='showInputInitialClear' value='' />
             </div>
         </div>
+		
         <h3 id="options-buttonText">Button Text</h3>
         <div class='option-content'>
             <div class='description'>
-                <p>You can set the button's text using <code>cancelText</code> and <code>chooseText</code> properties.</p>
+                <p>You can set the button's text using <code>cancelText</code>, <code>chooseText</code>, and <code>clearText</code> properties.</p>
             </div>
 
             <pre class='prettyprint'>
@@ -1067,18 +1076,5 @@ t.toName()      // "red"
 </div>
 
 <script type="text/javascript" src="docs/prettify.js"></script>
-<script type="text/javascript">
-
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-8259845-4']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
-</script>
 </body>
 </html>

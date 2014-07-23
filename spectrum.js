@@ -125,11 +125,12 @@
 
     function paletteTemplate (p, color, className, opts) {
         var html = [];
+        var c;
         for (var i = 0; i < p.length; i++) {
             var current = p[i];
-            if(current) {
+            if (current) {
                 var tiny = tinycolor(current);
-                var c = tiny.toHsl().l < 0.5 ? "sp-thumb-el sp-thumb-dark" : "sp-thumb-el sp-thumb-light";
+                c = tiny.toHsl().l < 0.5 ? "sp-thumb-el sp-thumb-dark" : "sp-thumb-el sp-thumb-light";
                 c += (tinycolor.equals(color, current)) ? " sp-thumb-active" : "";
                 var formattedString = tiny.toString(opts.preferredFormat || "rgb");
                 var swatchStyle = rgbaSupport ? ("background-color:" + tiny.toRgbString()) : "filter:" + tiny.toFilter();
@@ -306,7 +307,7 @@
                 }
             });
 
-            if(boundElement.is(":disabled") || (opts.disabled === true)) {
+            if (boundElement.is(":disabled") || (opts.disabled === true)) {
                 disable();
             }
 
@@ -318,7 +319,11 @@
             textInput.bind("paste", function () {
                 setTimeout(setFromTextInput, 1);
             });
-            textInput.keydown(function (e) { if (e.keyCode == 13) { setFromTextInput(); } });
+            textInput.keydown(function (e) { 
+                if (e.keyCode == 13) { 
+                    setFromTextInput(); 
+                } 
+            });
 
             cancelButton.text(opts.cancelText);
             cancelButton.bind("click.spectrum", function (e) {
@@ -331,24 +336,23 @@
             clearButton.bind("click.spectrum", function (e) {
                 e.stopPropagation();
                 e.preventDefault();
-                isEmpty = true;
-                move();
 
-                if(flat) {
+                isEmpty = true;
+
+                move();
+                if (flat) {
                     //for the flat style, this is a change event
                     updateOriginalInput(true);
                 }
             });
 
             chooseButton.text(opts.chooseText);
+
             chooseButton.bind("click.spectrum", function (e) {
                 e.stopPropagation();
                 e.preventDefault();
 
-                if (isValid()) {
-                    updateOriginalInput(true);
-                    hide();
-                }
+                chooseAndClose();
             });
             
             if (opts.showAlpha && opts.showAlphaText) {
@@ -396,7 +400,7 @@
                 }
                 if (setValue) {
                     currentValue = parseFloat((dragHeight - dragY) / dragHeight);
-                }
+				}
 
                 isEmpty = false;
                 if (!opts.showAlpha) {
@@ -478,12 +482,16 @@
                     }
                 }
 
-                if (localStorageKey && window.localStorage) {
-                    try {
+               try//Cookies disabled issues
+                {
+                    if (localStorageKey && window.localStorage)
+                    {
+
                         window.localStorage[localStorageKey] = selectionPalette.join(";");
                     }
-                    catch(e) { }
+
                 }
+                catch (e) { }
             }
         }
 
@@ -588,6 +596,7 @@
             visible = true;
 
             $(doc).bind("click.spectrum", hide);
+            $(doc).bind("keydown.spectrum", keydownHandler);
             $(window).bind("resize.spectrum", resize);
             replacer.addClass("sp-active");
             container.removeClass("sp-hidden");
@@ -612,6 +621,7 @@
             visible = false;
 
             $(doc).unbind("click.spectrum", hide);
+            $(doc).unbind("keydown.spectrum", keydownHandler);
             $(window).unbind("resize.spectrum", resize);
 
             replacer.removeClass("sp-active");
@@ -644,7 +654,8 @@
                 return;
             }
 
-            var newColor, newHsv;
+			var newColor = { ok: false };
+            var newHsv;
             if (!color && allowEmpty) {
                 isEmpty = true;
             } else {
@@ -657,6 +668,7 @@
                 currentValue = newHsv.v;
                 currentAlpha = newHsv.a;
             }
+
             updateUI();
 
             if (newColor && newColor.isValid() && !ignoreFormatChange) {
@@ -664,8 +676,8 @@
             }
         }
 
-        function get(opts) {
-            opts = opts || { };
+        function get(options) {
+            options = options || { };
 
             if (allowEmpty && isEmpty) {
                 return null;
@@ -676,7 +688,7 @@
                 s: currentSaturation,
                 v: currentValue,
                 a: Math.round(currentAlpha * 100) / 100
-            }, { format: opts.format || currentPreferredFormat });
+            }, { format: options.format || currentPreferredFormat });
         }
 
         function isValid() {
@@ -711,7 +723,7 @@
             var realColor = get({ format: format }),
                 displayColor = '';
 
-             //reset background info for preview element
+            //reset background info for preview element
             previewElement.removeClass("sp-clear-display");
             previewElement.css('background-color', 'transparent');
 
@@ -767,6 +779,12 @@
                 drawPalette();
             }
 
+            if (allowEmpty) {
+                var noColorHeight = clearButton.height(),
+                    padding = 8;
+                slider.css({"top": (noColorHeight + padding) + "px"});
+            }
+
             drawInitial();
         }
 
@@ -774,7 +792,7 @@
             var s = currentSaturation;
             var v = currentValue;
 
-            if(allowEmpty && isEmpty) {
+            if (allowEmpty && isEmpty) {
                 //if selected color is empty, hide the helpers
                 alphaSlideHelper.hide();
                 slideHelper.hide();
@@ -835,6 +853,24 @@
             if (fireCallback && hasChanged) {
                 callbacks.change(color);
                 boundElement.trigger('change', [ color ]);
+            }
+        }
+
+        function chooseAndClose() {
+            if (isValid()) {
+                updateOriginalInput(true);
+                hide();
+            }
+        }
+
+        function keydownHandler(e) {
+            if (!flat) {
+                if (e.keyCode === 13) { // Enter
+                    chooseAndClose();
+                }
+                else if (e.keyCode === 27) { // Escape
+                    revert();
+                }
             }
         }
 
@@ -1078,9 +1114,9 @@
     * Define a jQuery plugin
     */
     var dataID = "spectrum.id";
-    $.fn.spectrum = function (opts, extra) {
+    $.fn.spectrum = function (options, extra) {
 
-        if (typeof opts == "string") {
+        if (typeof options == "string") {
 
             var returnValue = this;
             var args = Array.prototype.slice.call( arguments, 1 );
@@ -1088,21 +1124,21 @@
             this.each(function () {
                 var spect = spectrums[$(this).data(dataID)];
                 if (spect) {
-                    var method = spect[opts];
+                    var method = spect[options];
                     if (!method) {
-                        throw new Error( "Spectrum: no such method: '" + opts + "'" );
+                        throw new Error( "Spectrum: no such method: '" + options + "'" );
                     }
 
-                    if (opts == "get") {
+                    if (options == "get") {
                         returnValue = spect.get();
                     }
-                    else if (opts == "container") {
+                    else if (options == "container") {
                         returnValue = spect.container;
                     }
-                    else if (opts == "option") {
+                    else if (options == "option") {
                         returnValue = spect.option.apply(spect, args);
                     }
-                    else if (opts == "destroy") {
+                    else if (options == "destroy") {
                         spect.destroy();
                         $(this).removeData(dataID);
                     }
@@ -1117,7 +1153,7 @@
 
         // Initializing a new instance of spectrum
         return this.spectrum("destroy").each(function () {
-            var options = $.extend({}, opts, $(this).data());
+            var options = $.extend({}, options, $(this).data());
             var spect = spectrum(this, options);
             $(this).data(dataID, spect.id);
         });
@@ -1324,7 +1360,7 @@
 
     // If input is an object, force 1 into "1.0" to handle ratios properly
     // String input requires "1.0" as input, so 1 will be treated as 1
-    tinycolor.fromRatio = function(color, opts) {
+    tinycolor.fromRatio = function(color, options) {
         if (typeof color == "object") {
             var newColor = {};
             for (var i in color) {
@@ -1340,7 +1376,7 @@
             color = newColor;
         }
 
-        return tinycolor(color, opts);
+        return tinycolor(color, options);
     };
 
     // Given a string or object, convert that input to RGB
@@ -1440,7 +1476,7 @@
         var max = mathMax(r, g, b), min = mathMin(r, g, b);
         var h, s, l = (max + min) / 2;
 
-        if(max == min) {
+        if (max == min) {
             h = s = 0; // achromatic
         }
         else {
@@ -1470,15 +1506,15 @@
         l = bound01(l, 100);
 
         function hue2rgb(p, q, t) {
-            if(t < 0) t += 1;
-            if(t > 1) t -= 1;
-            if(t < 1/6) return p + (q - p) * 6 * t;
-            if(t < 1/2) return q;
-            if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1/6) return p + (q - p) * 6 * t;
+            if (t < 1/2) return q;
+            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
             return p;
         }
 
-        if(s === 0) {
+        if (s === 0) {
             r = g = b = l; // achromatic
         }
         else {
@@ -1508,7 +1544,7 @@
         var d = max - min;
         s = max === 0 ? 0 : d / max;
 
-        if(max == min) {
+        if (max == min) {
             h = 0; // achromatic
         }
         else {

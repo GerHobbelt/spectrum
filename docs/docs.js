@@ -247,11 +247,20 @@ $("#showInitial").spectrum({
 
 $("#showInputAndInitial").spectrum({
     showInitial: true,
-    showInput: true
+    showInput: true,
+    change: updateBorders
 });
 
 $("#showInputInitialClear").spectrum({
-    allowEmpty:true,
+    allowEmpty: true,
+    showInitial: true,
+    showInput: true,
+    change: updateBorders,
+    preferredFormat: 'hex'
+});
+
+$("#showInputInitialClear").spectrum({
+    allowEmpty: true,
     showInitial: true,
     showInput: true
 });
@@ -312,8 +321,9 @@ $(".override").spectrum({
 });
 
 $(".startEmpty").spectrum({
-    allowEmpty:true,
-    change: updateBorders});
+    allowEmpty: true,
+    change: updateBorders
+});
 
 $("#beforeShow").spectrum({
     beforeShow: function() {

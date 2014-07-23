@@ -54,7 +54,6 @@ License: MIT
     right:0;
     bottom:0;
     left:84%;
-    height: 100%;
 }
 
 .sp-clear-enabled .sp-hue {
@@ -134,7 +133,7 @@ License: MIT
 .sp-clear-enabled .sp-clear {
     display: block;
     position:absolute;
-    top:0px;
+    top:0;
     right:0;
     bottom:0;
     left:84%;
@@ -482,7 +481,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
     -o-box-shadow: inset 0 0 5px 2px #aaaaaa, 0 1px 0 0 #eeeeee;
     box-shadow: inset 0 0 5px 2px #aaaaaa, 0 1px 0 0 #eeeeee;
 }
-.sp-cancel
+.sp-cancel, .sp-clear
 {
     font-size: 11px;
     color: #d93f3f !important;
@@ -493,7 +492,8 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
     text-decoration:none;
 
 }
-.sp-cancel:hover
+
+.sp-cancel:hover, .sp-clear:hover
 {
     color: #d93f3f !important;
     text-decoration: underline;
