@@ -32,6 +32,16 @@ module.exports = function(grunt) {
           jQuery: true
         }
       },
+
+      with_overrides: {
+        options: {
+          strict: false
+        },
+        files: {
+          src: ['i18n/*.js', 'test/tests.js']
+        },
+      },
+
       all: ['spectrum.js']
     },
 
