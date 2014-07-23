@@ -143,7 +143,7 @@ test( "Palette Events Fire In Correct Order ", function() {
     ],
     move: function() {
 
-    },
+    }
   });
 
   var count = 0;
@@ -168,7 +168,7 @@ test( "Palette click events work ", function() {
     ],
     move: function() {
 
-    },
+    }
   });
 
   el.spectrum("container").find(".sp-thumb-el:nth-child(3)").click();
@@ -264,7 +264,7 @@ test( "Options Can Be Set and Gotten Programmatically", function() {
   spec.spectrum("option", "palette", [['red'], ['green'], ['blue']]);
   var optPalette = spec.spectrum("option", "palette");
   deepEqual (optPalette, [['red'], ['green'], ['blue']], "Changing an option then fetching it is updated");
-  var numPaletteElements = spec.spectrum("container").find(".sp-palette-row:not(.sp-palette-row-selection) .sp-thumb-el").length;
+  numPaletteElements = spec.spectrum("container").find(".sp-palette-row:not(.sp-palette-row-selection) .sp-thumb-el").length;
   equal (numPaletteElements, 3, "Three palette elements after updating");
 
   var appendToDefault = $("<input />").spectrum({
@@ -333,6 +333,45 @@ test ("Show Input works as expected", function() {
   el.spectrum("destroy");
 });
 
+test ("Toggle Picker Area button works as expected", function() {
+  var div = $("<div style='position:absolute; right:0; height:20px; width:150px'>").appendTo('body').show(),
+      el = $("<input />").appendTo(div);
+  el.spectrum({
+    showInput: true,
+	showPaletteOnly: true,
+    togglePaletteOnly: true,
+    color: "red"
+  });
+  
+  var spectrum = el.spectrum("container").show(),
+      toggle = spectrum.find(".sp-palette-toggle"),
+      picker = spectrum.find(".sp-picker-container"),
+      palette = spectrum.find(".sp-palette-container");
+  
+  // Open the Colorpicker
+  el.spectrum("show");
+  equal(picker.is(":hidden"), true, "The picker area is hidden by default.");
+  ok(spectrum.hasClass("sp-palette-only"), "The 'palette-only' class is enabled.");
+  
+  // Click the Picker area Toggle button to show the Picker
+  toggle.click();
+
+  equal(picker.is(":hidden"), false, "After toggling, the picker area is visible.");
+  ok(!spectrum.hasClass("sp-palette-only"), "The 'palette-only' class is disabled.");
+  equal(Math.round(picker.offset().top), Math.round(palette.offset().top), "The picker area is next to the palette.");
+  
+  // Click the toggle again to hide the picker
+  toggle.trigger("click");
+  
+  equal(picker.is(":hidden"), true, "After toggling again, the picker area is hidden.");
+  ok(spectrum.hasClass("sp-palette-only"), "And the 'palette-only' class is enabled.");
+  
+  // Cleanup
+  el.spectrum("hide");
+  el.spectrum("destroy");
+  el.remove();
+  div.remove();
+});
 
 test ("Tooltip is formatted based on preferred format", function() {
   var el = $("<input />").spectrum({

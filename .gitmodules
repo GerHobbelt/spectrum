@@ -1,0 +1,3 @@
+[submodule "lib/TinyColor"]
+	path = lib/TinyColor
+	url = git@github.com:GerHobbelt/TinyColor.git
