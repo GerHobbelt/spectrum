@@ -163,7 +163,7 @@
             selectionPalette = opts.selectionPalette.slice(0),
             draggingClass = "sp-dragging";
 
-        var doc = o.document || element.ownerDocument,
+        var doc = opts.document || element.ownerDocument,
             body = doc.body,
             boundElement = $(element),
             disabled = false,
@@ -184,7 +184,7 @@
             shouldReplace = isInput && !flat,
             replacer = (shouldReplace) ? $(replaceInput).addClass(theme) : $([]),
             offsetElement = (shouldReplace) ? replacer : boundElement,
-            previewElement = replacer.find(".sp-preview-inner"),
+            previewElement = opts.preview || replacer.find(".sp-preview-inner"),
             initialColor = opts.color || (isInput && boundElement.val()),
             colorOnShow = false,
             preferredFormat = opts.preferredFormat,
