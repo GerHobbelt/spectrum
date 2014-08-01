@@ -163,7 +163,7 @@
             selectionPalette = opts.selectionPalette.slice(0),
             draggingClass = "sp-dragging";
 
-        var doc = element.ownerDocument,
+        var doc = o.document || element.ownerDocument,
             body = doc.body,
             boundElement = $(element),
             disabled = false,
@@ -191,6 +191,10 @@
             currentPreferredFormat = preferredFormat,
             clickoutFiresChange = !opts.showButtons || opts.clickoutFiresChange;
 
+        container.data('document', doc);
+        alphaSlider.data('document', doc);
+        slider.data('document', doc);
+        dragger.data('document', doc);
 
         function applyOptions() {
 
@@ -745,7 +749,7 @@
         var dpWidth = picker.outerWidth();
         var dpHeight = picker.outerHeight();
         var inputHeight = input.outerHeight();
-        var doc = picker[0].ownerDocument;
+        var doc = picker.data('document') || picker[0].ownerDocument;
         var docElem = doc.documentElement;
         var viewWidth = docElem.clientWidth + $(doc).scrollLeft();
         var viewHeight = docElem.clientHeight + $(doc).scrollTop();
@@ -797,7 +801,7 @@
         onmove = onmove || function () { };
         onstart = onstart || function () { };
         onstop = onstop || function () { };
-        var doc = element.ownerDocument || document;
+        var doc = $(element).data('document') || element.ownerDocument || document;
         var dragging = false;
         var offset = {};
         var maxHeight = 0;
