@@ -5,7 +5,7 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
 
     qunit: {
-      all: ['test/index.html']
+      all: ['test/index.html', 'test/loaders.html']
     },
 
     jshint: {
@@ -17,6 +17,16 @@ module.exports = function(grunt) {
           jQuery: true
         }
       },
+
+      with_overrides: {
+        options: {
+          strict: false
+        },
+        files: {
+          src: ['i18n/*.js', 'test/tests.js']
+        },
+      },
+
       all: ['spectrum.js']
     },
 
