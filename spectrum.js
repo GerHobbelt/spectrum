@@ -14,10 +14,12 @@
         change: noop,
         show: noop,
         hide: noop,
+        auto: noop,
 
         // Options
         color: false,
         flat: false,
+        showAutoColor: false,
         showInput: false,
         allowEmpty: false,
         showButtons: true,
@@ -41,6 +43,9 @@
         theme: "sp-light",
         palette: [["#ffffff", "#000000", "#ff0000", "#ff8000", "#ffff00", "#008000", "#0000ff", "#4b0082", "#9400d3"]],
         selectionPalette: [],
+        autoColor: "#ffffff",
+        autoColorFunction: null,
+        autoColorTitle: "Automatic",
         disabled: false
     },
     spectrums = [],
@@ -78,6 +83,7 @@
 
         return [
             "<div class='sp-container sp-hidden'>",
+                "<div class='sp-auto-container'></div>",
                 "<div class='sp-palette-container'>",
                     "<div class='sp-palette sp-thumb sp-cf'></div>",
                 "</div>",
@@ -137,6 +143,26 @@
         }
         return "<div class='sp-cf " + className + "'>" + html.join('') + "</div>";
     }
+    
+    function automaticColorTemplate(color, title, currentColor, opts) {
+        var autoColor = (typeof(color) === "string") ? color : color.call(this);
+        var tiny = tinycolor(autoColor);
+        var colorClass = tiny.toHsl().l < 0.5 ? "sp-thumb-el sp-thumb-dark" : "sp-thumb-el sp-thumb-light";
+        var swatchStyle = rgbaSupport ? ("background-color:" + tiny.toRgbString()) : "filter:" + tiny.toFilter();
+        var formattedString = tiny.toString(opts.preferredFormat || "rgb");
+        
+        colorClass += (tiny.toRgbString() === currentColor.toRgbString()) ? " sp-thumb-active" : "";
+                
+        var view = [
+            '<span data-color="' + formattedString + '" class="' + colorClass + '">',
+                    '<span class="sp-thumb-inner" style="' + swatchStyle+ ';"></span>',
+                '</span>',
+            '<div class="sp-auto-color-title">' + title + '</div>'
+        ];
+        
+        return view.join('');
+    }
+    
 
     function hideAll() {
         for (var i = 0; i < spectrums.length; i++) {
@@ -153,7 +179,8 @@
             'change': bind(opts.change, callbackContext),
             'show': bind(opts.show, callbackContext),
             'hide': bind(opts.hide, callbackContext),
-            'beforeShow': bind(opts.beforeShow, callbackContext)
+            'beforeShow': bind(opts.beforeShow, callbackContext),
+            'auto': bind(opts.auto, callbackContext)
         };
 
         return opts;
@@ -204,6 +231,7 @@
             textInput = container.find(".sp-input"),
             paletteContainer = container.find(".sp-palette"),
             initialColorContainer = container.find(".sp-initial"),
+            autoColorContainer = container.find(".sp-auto-container"),
             cancelButton = container.find(".sp-cancel"),
             clearButton = container.find(".sp-clear"),
             chooseButton = container.find(".sp-choose"),
@@ -427,10 +455,24 @@
 
                 return false;
             }
+            
+            function autoColorClick(event) {
+                var colorElement = $(this).find(".sp-thumb-el");
+    
+                set(colorElement.data("color"));
+                
+                updateOriginalInput(true, true);
+                hide();
+                            
+                return false;
+            }
 
-            var paletteEvent = IE ? "mousedown.spectrum" : "click.spectrum touchstart.spectrum";
-            paletteContainer.delegate(".sp-thumb-el", paletteEvent, paletteElementClick);
-            initialColorContainer.delegate(".sp-thumb-el:nth-child(1)", paletteEvent, { ignore: true }, paletteElementClick);
+            var boxColorSelectionEvent = IE ? "mousedown.spectrum" : "click.spectrum touchstart.spectrum";
+            paletteContainer.delegate(".sp-thumb-el", boxColorSelectionEvent, paletteElementClick);
+            initialColorContainer.delegate(".sp-thumb-el:nth-child(1)", boxColorSelectionEvent, { ignore: true }, paletteElementClick);
+            
+            // autoColorContainer.delegate(".sp-thumb-el", boxColorSelectionEvent, autoColorClick);
+            autoColorContainer.on(boxColorSelectionEvent, autoColorClick);
         }
 
         function updateSelectionPaletteFromStorage() {
@@ -489,7 +531,7 @@
 
             return unique.reverse().slice(0, opts.maxSelectionSize);
         }
-
+        
         function drawPalette() {
 
             var currentColor = get();
@@ -505,6 +547,17 @@
             }
 
             paletteContainer.html(html.join(""));
+        }
+        
+        /**
+         * @private
+         */
+        function drawAutoColor() {
+            var currentColor = get();
+            var color = (opts.autoColorFunction !== null) ? opts.autoColorFunction : opts.autoColor;
+            var autoColorHtml = automaticColorTemplate(color, opts.autoColorTitle, currentColor, opts);
+            
+            autoColorContainer.html(autoColorHtml);
         }
 
         function drawInitial() {
@@ -750,6 +803,10 @@
             if (opts.showPalette) {
                 drawPalette();
             }
+            
+            if(opts.showAutoColor) {
+                drawAutoColor();
+            }
 
             drawInitial();
         }
@@ -799,7 +856,7 @@
             }
         }
 
-        function updateOriginalInput(fireCallback) {
+        function updateOriginalInput(fireCallback, isAutoColor) {
             var color = get(),
                 displayColor = '',
                 hasChanged = !tinycolor.equals(color, colorOnShow);
@@ -817,8 +874,12 @@
             colorOnShow = color;
 
             if (fireCallback && hasChanged) {
-                callbacks.change(color);
+                callbacks.change(color, isAutoColor);
                 boundElement.trigger('change', [ color ]);
+                
+                if(isAutoColor) {
+                    callbacks.auto(color);
+                }
             }
         }
 
@@ -841,6 +902,10 @@
 
             if (opts.showPalette) {
                 drawPalette();
+            }
+            
+            if (opts.showAutoColor) {
+                drawAutoColor();
             }
 
             boundElement.trigger('reflow.spectrum');
