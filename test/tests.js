@@ -106,6 +106,23 @@ test( "Events Fire", function() {
   el2.spectrum("destroy");
 });
 
+test( "Dragging", function() {
+  var el = $("<input id='spec' />").spectrum();
+  var hueSlider = el.spectrum("container").find(".sp-hue");
+
+  ok (hueSlider.length, "There is a hue slider");
+
+  hueSlider.trigger("mousedown");
+
+  ok ($("body").hasClass("sp-dragging"), "The body has dragging class");
+
+  hueSlider.trigger("mouseup");
+
+  ok (!$("body").hasClass("sp-dragging"), "The body does not have a dragging class");
+
+  el.spectrum("destroy");
+});
+
 module("Defaults");
 
 test( "Default Color Is Set By Input Value", function() {
@@ -179,6 +196,38 @@ test( "Palette click events work ", function() {
   equal (el.spectrum("get").toName(), "red", "Third click worked (on child element)");
   el.spectrum("destroy");
 
+});
+
+test( "hideAfterPaletteSelect: Palette stays open after color select", function() {
+  var el = $("<input id='spec' value='red' />").spectrum({
+    showPalette: true,
+    hideAfterPaletteSelect: false,
+    palette: [
+      ["red", "green", "blue"]
+    ]
+  });
+
+  el.spectrum("show");
+  el.spectrum("container").find(".sp-thumb-el:nth-child(1)").click();
+
+  ok(!el.spectrum("container").hasClass('sp-hidden'), "palette is still visible after color selection");
+  el.spectrum("destroy");
+});
+
+test( "hideAfterPaletteSelect: Palette closes after color select", function() {
+  var el = $("<input id='spec' value='red' />").spectrum({
+    showPalette: true,
+    hideAfterPaletteSelect: true,
+    palette: [
+      ["red", "green", "blue"]
+    ]
+  });
+
+  el.spectrum("show");
+  el.spectrum("container").find(".sp-thumb-el:nth-child(1)").click();
+
+  ok(el.spectrum("container").hasClass('sp-hidden'), "palette is still hidden after color selection");
+  el.spectrum("destroy");
 });
 
 test( "Local Storage Is Limited ", function() {
