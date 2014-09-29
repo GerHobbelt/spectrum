@@ -1,4 +1,4 @@
-// Spectrum Colorpicker v1.5.0
+// Spectrum Colorpicker v1.5.1
 // https://github.com/bgrins/spectrum
 // Author: Brian Grinstead
 // License: MIT
@@ -363,7 +363,8 @@
             cancelButton.bind("click.spectrum", function (e) {
                 e.stopPropagation();
                 e.preventDefault();
-                hide("cancel");
+                revert();
+                hide();
             });
 
             clearButton.attr("title", opts.clearText);
@@ -645,7 +646,7 @@
             hideAll();
             visible = true;
 
-            $(doc).bind("click.spectrum", hide);
+            $(doc).bind("click.spectrum", clickout);
             $(doc).bind("keydown.spectrum", keydownHandler);
             $(window).bind("resize.spectrum", resize);
             replacer.addClass("sp-active");
@@ -661,32 +662,30 @@
             boundElement.trigger('show.spectrum', [ colorOnShow ]);
         }
 
-        function hide(e) {
-
-            // Return on right click
+        function clickout(e) {
+            // Return on right click.
             if (e && e.type == "click" && e.button == 2) { return; }
 
+            if (clickoutFiresChange) {
+                updateOriginalInput(true);
+            }
+            else {
+                revert();
+            }
+            hide();
+        }
+
+        function hide() {
             // Return if hiding is unnecessary
             if (!visible || flat) { return; }
             visible = false;
 
-            $(doc).unbind("click.spectrum", hide);
+            $(doc).unbind("click.spectrum", clickout);
             $(doc).unbind("keydown.spectrum", keydownHandler);
             $(window).unbind("resize.spectrum", resize);
 
             replacer.removeClass("sp-active");
             container.addClass("sp-hidden");
-
-            var colorHasChanged = !tinycolor.equals(get(), colorOnShow);
-
-            if (colorHasChanged) {
-                if (clickoutFiresChange && e !== "cancel") {
-                    updateOriginalInput(true);
-                }
-                else {
-                    revert();
-                }
-            }
 
             callbacks.hide(get());
             boundElement.trigger('hide.spectrum', [ get() ]);
@@ -897,8 +896,6 @@
             if (isInput) {
                 boundElement.val(displayColor);
             }
-
-            colorOnShow = color;
 
             if (fireCallback && hasChanged) {
                 callbacks.change(color);

@@ -391,30 +391,30 @@ test ("Toggle Picker Area button works as expected", function() {
     togglePaletteOnly: true,
     color: "red"
   });
-  
+
   var spectrum = el.spectrum("container").show(),
       toggle = spectrum.find(".sp-palette-toggle"),
       picker = spectrum.find(".sp-picker-container"),
       palette = spectrum.find(".sp-palette-container");
-  
+
   // Open the Colorpicker
   el.spectrum("show");
   equal(picker.is(":hidden"), true, "The picker area is hidden by default.");
   ok(spectrum.hasClass("sp-palette-only"), "The 'palette-only' class is enabled.");
-  
+
   // Click the Picker area Toggle button to show the Picker
   toggle.click();
 
   equal(picker.is(":hidden"), false, "After toggling, the picker area is visible.");
   ok(!spectrum.hasClass("sp-palette-only"), "The 'palette-only' class is disabled.");
   equal(Math.round(picker.offset().top), Math.round(palette.offset().top), "The picker area is next to the palette.");
-  
+
   // Click the toggle again to hide the picker
   toggle.trigger("click");
-  
+
   equal(picker.is(":hidden"), true, "After toggling again, the picker area is hidden.");
   ok(spectrum.hasClass("sp-palette-only"), "And the 'palette-only' class is enabled.");
-  
+
   // Cleanup
   el.spectrum("hide");
   el.spectrum("destroy");
@@ -598,4 +598,26 @@ test("The selectedPalette should not be updated in spectrum instances that have 
 
   delete window.localStorage["spectrum.test_1"];
   delete window.localStorage["spectrum.test_2"];
+});
+
+test( "Cancelling reverts color", function() {
+  var el = $("<input value='red' />").spectrum();
+  el.spectrum("show");
+  equal ( el.spectrum("get").toName(), "red", "Color is initialized");
+  el.spectrum("set", "orange");
+  equal ( el.spectrum("get").toName(), "orange", "Color is set");
+  el.spectrum("container").find(".sp-cancel").click();
+  equal ( el.spectrum("get").toName(), "red", "Color is reverted after clicking 'cancel'");
+  el.spectrum("destroy");
+});
+
+test( "Choosing updates the color", function() {
+  var el = $("<input value='red' />").spectrum();
+  el.spectrum("show");
+  equal ( el.spectrum("get").toName(), "red", "Color is initialized");
+  el.spectrum("set", "orange");
+  equal ( el.spectrum("get").toName(), "orange", "Color is set");
+  el.spectrum("container").find(".sp-choose").click();
+  equal ( el.spectrum("get").toName(), "orange", "Color is kept after clicking 'choose'");
+  el.spectrum("destroy");
 });
