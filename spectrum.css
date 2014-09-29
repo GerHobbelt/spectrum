@@ -77,6 +77,7 @@ License: MIT
 }
 .sp-alpha-enabled .sp-alpha {
     display: block;
+    margin-bottom: 8px;
 }
 .sp-alpha-handle {
     position:absolute;
@@ -99,7 +100,7 @@ License: MIT
     
 }
 .sp-alpha-inner-bg {
-    height: 10px;
+    /* height: 10px; */
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==);
 }
 .sp-alpha-inner {
@@ -107,19 +108,22 @@ License: MIT
 }
 
 .sp-alpha-text {
-    position:relative;
-    display:block;
+    position: relative;
+    display: block;
 }
 
 .sp-alpha.sp-alpha-text-enabled {
-    height:30px;
+    height: 30px;
 }
 .sp-alpha-inner
 {
-    display:block;
-    position:relative;
-    height:8px;
-    top:0;left:0;bottom:0;right:0;
+    display: block;
+    position: relative;
+    /* height: 8px; */
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
 }
 
 .sp-clear {
@@ -132,11 +136,12 @@ License: MIT
 
 .sp-clear-enabled .sp-clear {
     display: block;
-    position:absolute;
-    top:0;
-    right:0;
-    bottom:0;
-    left:84%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 84%;
+    margin-right: 0;
     height: 28px;
 }
 

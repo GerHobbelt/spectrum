@@ -829,9 +829,13 @@
             }
 
             if (allowEmpty) {
-                var noColorHeight = clearButton.height(),
+                var noColorHeight = clearButton.outerHeight(),
+                    totalAvailableHeight = dragger.outerHeight(),
                     padding = 8;
-                slider.css({"top": (noColorHeight + padding) + "px"});
+                slider.css({
+                    "top": (noColorHeight + padding) + "px",
+                    "height": (totalAvailableHeight - noColorHeight - padding) + "px"
+                });
             }
 
             drawInitial();
