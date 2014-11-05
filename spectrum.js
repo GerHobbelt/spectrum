@@ -372,7 +372,6 @@
         }
 
         function initialize() {
-
             var appendTo;
             
             if (IE) {
@@ -393,7 +392,6 @@
                 boundElement.after(container).hide();
             }
             else {
-
                 appendTo = opts.appendTo === "parent" ? boundElement.parent() : $(opts.appendTo);
                 
                 if (appendTo.length !== 1) {
@@ -404,6 +402,10 @@
             }
 
             updateSelectionPaletteFromStorage();
+
+            if (!opts.showAutoColor) {
+                autoColorContainer.hide();
+            }
 
             offsetElement.bind("click.spectrum touchstart.spectrum", function (e) {
                 if (!disabled) {
@@ -514,7 +516,6 @@
             }, dragStart, dragStop, appendTo);
 
             draggable(dragger, function (dragX, dragY, e) {
-
                 // shift+drag should snap the movement to either the x or y axis.
                 if (!e.shiftKey) {
                     shiftMovementDirection = null;
@@ -543,7 +544,6 @@
                 }
 
                 move();
-
             }, dragStart, dragStop, appendTo);
 
             if (!!initialColor) {
@@ -601,9 +601,7 @@
         }
 
         function updateSelectionPaletteFromStorage() {
-
             if (localStorageKey && window.localStorage) {
-
                 // Migrate old palettes over to new format.  May want to remove this eventually.
                 try {
                     var oldPalette = window.localStorage[localStorageKey].split(",#");
@@ -968,7 +966,7 @@
                 });
             }
             
-            if(opts.showAutoColor) {
+            if (opts.showAutoColor) {
                 drawAutoColor();
             }
 
