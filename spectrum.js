@@ -70,6 +70,7 @@
         theme: "sp-light",
         palette: [["#ffffff", "#000000", "#ff0000", "#ff8000", "#ffff00", "#008000", "#0000ff", "#4b0082", "#9400d3"]],
         selectionPalette: [],
+        positioning: 'absolute',
         disabled: false
     },
     spectrums = [],
@@ -1009,8 +1010,8 @@
             alphaSlideHelperWidth = alphaSlideHelper.width();
 
             if (!flat) {
-                container.css("position", "absolute");
-                if( typeof opts.position === 'object' ) {
+                container.css("position", opts.positioning);
+                if (typeof opts.position === 'object') {
                     container.offset(opts.position);
                 } else {
                     container.offset(getOffset(container, offsetElement));
