@@ -1010,7 +1010,11 @@
 
             if (!flat) {
                 container.css("position", "absolute");
-                container.offset(getOffset(container, offsetElement));
+                if( typeof opts.position === 'object' ) {
+                    container.offset(opts.position);
+                } else {
+                    container.offset(getOffset(container, offsetElement));
+                }
             }
 
             updateHelperLocations();
@@ -1055,6 +1059,11 @@
             offsetElement.addClass("sp-disabled");
         }
 
+        function position(coord) {
+            opts.position = coord;
+            reflow();
+        }
+
         initialize();
 
         var spect = {
@@ -1065,6 +1074,7 @@
             option: option,
             enable: enable,
             disable: disable,
+            position: position,
             set: function (c) {
                 set(c);
                 updateOriginalInput();
