@@ -29,7 +29,6 @@
     
 
     var defaultOpts = {
-
         // Callbacks
         beforeShow: noop,
         move: noop,
@@ -166,7 +165,7 @@
         /* Donna End */
     })();
 
-    function paletteTemplate (p, color, className, opts) {
+    function paletteTemplate(p, color, className, opts) {
         var html = [];
         var c;
         for (var i = 0; i < p.length; i++) {
@@ -191,8 +190,8 @@
         return "<div class='sp-cf " + className + "'>" + html.join('') + "</div>";
     }
     
-    function automaticColorTemplate(color, title, currentColor, opts) {
-        var autoColor = (typeof(color) === "string") ? color : color.call(this);
+    function automaticColorTemplate(boundElement, color, title, currentColor, opts) {
+        var autoColor = (typeof(color) === "string") ? color : color.call(boundElement);
         var tiny = tinycolor(autoColor);
         var colorClass = tiny.toHsl().l < 0.5 ? "sp-thumb-el sp-thumb-dark" : "sp-thumb-el sp-thumb-light";
         var swatchStyle = rgbaSupport ? ("background-color:" + tiny.toRgbString()) : "filter:" + tiny.toFilter();
@@ -271,7 +270,6 @@
     }
 
     function spectrum(element, o) {
-
         var opts = instanceOptions(o, element),
             flat = opts.flat,
             showSelectionPalette = opts.showSelectionPalette,
@@ -582,6 +580,7 @@
             }
             
             function autoColorClick(event) {
+                /* jshint validthis: true */
                 var colorElement = $(this).find(".sp-thumb-el");
     
                 set(colorElement.data("color"));
@@ -656,7 +655,6 @@
         }
         
         function drawPalette() {
-
             var currentColor = get();
 
             var html = $.map(paletteArray, function (palette, i) {
@@ -678,7 +676,7 @@
         function drawAutoColor() {
             var currentColor = get();
             var color = (opts.autoColorFunction !== null) ? opts.autoColorFunction : opts.autoColor;
-            var autoColorHtml = automaticColorTemplate(color, opts.autoColorTitle, currentColor, opts);
+            var autoColorHtml = automaticColorTemplate(boundElement, color, opts.autoColorTitle, currentColor, opts);
             
             autoColorContainer.html(autoColorHtml);
         }
@@ -857,7 +855,6 @@
         }
 
         function updateUI() {
-
             textInput.removeClass("sp-validation-error");
 
             updateHelperLocations();
@@ -1247,7 +1244,7 @@
                     return stop();
                 }
 
-                var touches = e.originalEvent.touches;
+                var touches = e.originalEvent && e.originalEvent.touches;
                 var pageX = touches ? touches[0].pageX : e.pageX;
                 var pageY = touches ? touches[0].pageY : e.pageY;
 
