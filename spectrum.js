@@ -36,10 +36,12 @@
         change: noop,
         show: noop,
         hide: noop,
+        auto: noop,
 
         // Options
         color: false,
         flat: false,
+        showAutoColor: false,
         showInput: false,
         allowEmpty: false,
         showButtons: true,
@@ -70,6 +72,9 @@
         theme: "sp-light",
         palette: [["#ffffff", "#000000", "#ff0000", "#ff8000", "#ffff00", "#008000", "#0000ff", "#4b0082", "#9400d3"]],
         selectionPalette: [],
+        autoColor: "#ffffff",
+        autoColorFunction: null,
+        autoColorTitle: "Automatic",
         positioning: 'absolute',
         disabled: false
     },
@@ -112,6 +117,7 @@
         /* Donna Start - Changed sp-choose and sp-cancel HTML. */
         return [
             "<div class='sp-container sp-hidden'>",
+                "<div class='sp-auto-container'></div>",
                 "<div class='sp-palette-container'>",
                     "<div class='sp-palette sp-thumb sp-cf'></div>",
                     "<div class='sp-palette-button-container sp-cf'>",
@@ -184,6 +190,26 @@
         }
         return "<div class='sp-cf " + className + "'>" + html.join('') + "</div>";
     }
+    
+    function automaticColorTemplate(color, title, currentColor, opts) {
+        var autoColor = (typeof(color) === "string") ? color : color.call(this);
+        var tiny = tinycolor(autoColor);
+        var colorClass = tiny.toHsl().l < 0.5 ? "sp-thumb-el sp-thumb-dark" : "sp-thumb-el sp-thumb-light";
+        var swatchStyle = rgbaSupport ? ("background-color:" + tiny.toRgbString()) : "filter:" + tiny.toFilter();
+        var formattedString = tiny.toString(opts.preferredFormat || "rgb");
+        
+        colorClass += (tiny.toRgbString() === currentColor.toRgbString()) ? " sp-thumb-active" : "";
+                
+        var view = [
+            '<span data-color="' + formattedString + '" class="' + colorClass + '">',
+                    '<span class="sp-thumb-inner" style="' + swatchStyle+ ';"></span>',
+                '</span>',
+            '<div class="sp-auto-color-title">' + title + '</div>'
+        ];
+        
+        return view.join('');
+    }
+    
 
     function hideAll() {
         for (var i = 0; i < spectrums.length; i++) {
@@ -200,7 +226,8 @@
             'change': bind(opts.change, callbackContext),
             'show': bind(opts.show, callbackContext),
             'hide': bind(opts.hide, callbackContext),
-            'beforeShow': bind(opts.beforeShow, callbackContext)
+            'beforeShow': bind(opts.beforeShow, callbackContext),
+            'auto': bind(opts.auto, callbackContext)
         };
 
         /* Donna Start - Render different markup for text color picker. */
@@ -290,6 +317,7 @@
             alphaText = container.find(".sp-alpha-text"),
             paletteContainer = container.find(".sp-palette"),
             initialColorContainer = container.find(".sp-initial"),
+            autoColorContainer = container.find(".sp-auto-container"),
             cancelButton = container.find(".sp-cancel"),
             clearButton = container.find(".sp-clear"),
             chooseButton = container.find(".sp-choose"),
@@ -345,6 +373,8 @@
 
         function initialize() {
 
+            var appendTo;
+            
             if (IE) {
                 container.find("*:not(input)").attr("unselectable", "on");
             }
@@ -364,7 +394,8 @@
             }
             else {
 
-                var appendTo = opts.appendTo === "parent" ? boundElement.parent() : $(opts.appendTo);
+                appendTo = opts.appendTo === "parent" ? boundElement.parent() : $(opts.appendTo);
+                
                 if (appendTo.length !== 1) {
                     appendTo = $("body");
                 }
@@ -471,7 +502,7 @@
                 }
 
                 move();
-            }, dragStart, dragStop);
+            }, dragStart, dragStop, appendTo);
 
             draggable(slider, function (dragX, dragY) {
                 currentHue = parseFloat(dragY / slideHeight);
@@ -480,7 +511,7 @@
                     currentAlpha = 1;
                 }
                 move();
-            }, dragStart, dragStop);
+            }, dragStart, dragStop, appendTo);
 
             draggable(dragger, function (dragX, dragY, e) {
 
@@ -513,7 +544,7 @@
 
                 move();
 
-            }, dragStart, dragStop);
+            }, dragStart, dragStop, appendTo);
 
             if (!!initialColor) {
                 set(initialColor);
@@ -549,10 +580,24 @@
 
                 return false;
             }
+            
+            function autoColorClick(event) {
+                var colorElement = $(this).find(".sp-thumb-el");
+    
+                set(colorElement.data("color"));
+                
+                updateOriginalInput(true, true);
+                hide();
+                            
+                return false;
+            }
 
-            var paletteEvent = IE ? "mousedown.spectrum" : "click.spectrum touchstart.spectrum";
-            paletteContainer.delegate(".sp-thumb-el", paletteEvent, paletteElementClick);
-            initialColorContainer.delegate(".sp-thumb-el:nth-child(1)", paletteEvent, { ignore: true }, paletteElementClick);
+            var boxColorSelectionEvent = IE ? "mousedown.spectrum" : "click.spectrum touchstart.spectrum";
+            paletteContainer.delegate(".sp-thumb-el", boxColorSelectionEvent, paletteElementClick);
+            initialColorContainer.delegate(".sp-thumb-el:nth-child(1)", boxColorSelectionEvent, { ignore: true }, paletteElementClick);
+            
+            // autoColorContainer.delegate(".sp-thumb-el", boxColorSelectionEvent, autoColorClick);
+            autoColorContainer.on(boxColorSelectionEvent, autoColorClick);
         }
 
         function updateSelectionPaletteFromStorage() {
@@ -611,7 +656,7 @@
 
             return unique.reverse().slice(0, opts.maxSelectionSize);
         }
-
+        
         function drawPalette() {
 
             var currentColor = get();
@@ -627,6 +672,17 @@
             }
 
             paletteContainer.html(html.join(""));
+        }
+        
+        /**
+         * @private
+         */
+        function drawAutoColor() {
+            var currentColor = get();
+            var color = (opts.autoColorFunction !== null) ? opts.autoColorFunction : opts.autoColor;
+            var autoColorHtml = automaticColorTemplate(color, opts.autoColorTitle, currentColor, opts);
+            
+            autoColorContainer.html(autoColorHtml);
         }
 
         function drawInitial() {
@@ -911,6 +967,10 @@
                     "height": (totalAvailableHeight - noColorHeight - padding) + "px"
                 });
             }
+            
+            if(opts.showAutoColor) {
+                drawAutoColor();
+            }
 
             drawInitial();
         }
@@ -960,7 +1020,7 @@
             }
         }
 
-        function updateOriginalInput(fireCallback) {
+        function updateOriginalInput(fireCallback, isAutoColor) {
             var color = get(),
                 displayColor = '',
                 hasChanged = !tinycolor.equals(color, colorOnShow);
@@ -976,8 +1036,12 @@
             }
 
             if (fireCallback && hasChanged) {
-                callbacks.change(color);
+                callbacks.change(color, isAutoColor);
                 boundElement.trigger('change', [ color ]);
+                
+                if(isAutoColor) {
+                    callbacks.auto(color);
+                }
             }
         }
 
@@ -1022,6 +1086,10 @@
 
             if (opts.showPalette) {
                 drawPalette();
+            }
+            
+            if (opts.showAutoColor) {
+                drawAutoColor();
             }
 
             boundElement.trigger('reflow.spectrum');
@@ -1147,11 +1215,11 @@
     * Lightweight drag helper.  Handles containment within the element, so that
     * when dragging, the x is within [0,element.width] and y is within [0,element.height]
     */
-    function draggable(element, onmove, onstart, onstop) {
+    function draggable(element, onmove, onstart, onstop, baseElement) {
         onmove = onmove || function () { };
         onstart = onstart || function () { };
         onstop = onstop || function () { };
-        var doc = document;
+        var doc = (baseElement !== undefined) ? $(baseElement) : $('body'); // element.ownerDocument || document;
         var dragging = false;
         var offset = {};
         var maxHeight = 0;
@@ -1208,7 +1276,7 @@
                     offset = $(element).offset();
 
                     $(doc).bind(duringDragEvents);
-                    $(doc.body).addClass("sp-dragging");
+                    $(doc).addClass("sp-dragging");
 
                     move(e);
 
@@ -1220,7 +1288,7 @@
         function stop() {
             if (dragging) {
                 $(doc).unbind(duringDragEvents);
-                $(doc.body).removeClass("sp-dragging");
+                $(doc).removeClass("sp-dragging");
                 onstop.apply(element, arguments);
             }
             dragging = false;
