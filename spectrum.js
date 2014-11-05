@@ -65,7 +65,7 @@
         className: "", // Deprecated - use containerClassName and replacerClassName instead.
         containerClassName: "",
         replacerClassName: "",
-        type: "text", // Donna
+        type: "text", // Donna: text/highlight/background/color
         showAlpha: false,
         showAlphaText: false,
         theme: "sp-light",
@@ -230,27 +230,28 @@
         };
 
         /* Donna Start - Render different markup for text color picker. */
+        replaceInput = null;
         if (opts.type === "text") {
           replaceInput = [
             "<div class='sp-replacer text-color-picker'>",
-              "<div class='sp-preview'>",
-                "<div class='sp-preview-inner'>",
-                  "<div class='sp-preview-char'>A</div>",
+                "<div class='sp-preview'>",
+                    "<div class='sp-preview-inner'>",
+                        "<div class='sp-preview-char'>A</div>",
+                    "</div>",
                 "</div>",
-              "</div>",
-              "<b class='caret'></b>",
+                "<div class='sp-dd'>&#9660;</div>",
             "</div>"
           ].join('');
         }
         else if (opts.type === "highlight") {
           replaceInput = [
             "<div class='sp-replacer highlight-color-picker'>",
-              "<div class='sp-preview'>",
-                "<div class='sp-preview-inner'>",
-                  "<img src='http://s3.amazonaws.com/rise-common-test/scripts/spectrum/images/text-highlight.png'>",
+                "<div class='sp-preview'>",
+                    "<div class='sp-preview-inner'>",
+                        "<img src='http://s3.amazonaws.com/rise-common-test/scripts/spectrum/images/text-highlight.png'>",
+                    "</div>",
                 "</div>",
-              "</div>",
-              "<b class='caret'></b>",
+                "<div class='sp-dd'>&#9660;</div>",
             "</div>"
           ].join('');
         }
@@ -258,11 +259,22 @@
           replaceInput = [
             "<div class='sp-replacer background-color-picker'>",
                 "<div class='sp-preview'>",
-                  "<div class='sp-preview-inner'></div>",
-                  "</div>",
-                "<b class='caret'></b>",
+                    "<div class='sp-preview-inner'>",
+                    "</div>",
+                "</div>",
+                "<div class='sp-dd'>&#9660;</div>",
             "</div>"
           ].join('');
+        }
+        if (!replaceInput) {
+            replaceInput = [
+                "<div class='sp-replacer'>",
+                    "<div class='sp-preview'>",
+                        "<div class='sp-preview-inner'></div>",
+                    "</div>",
+                    "<div class='sp-dd'>&#9660;</div>",
+                "</div>"
+            ].join('');
         }
         /* Donna End */
 
@@ -325,7 +337,7 @@
             shouldReplace = isInput && !flat,
             replacer = (shouldReplace) ? $(replaceInput).addClass(theme).addClass(opts.className).addClass(opts.replacerClassName) : $([]),
             offsetElement = (shouldReplace) ? replacer : boundElement,
-            previewElement = opts.type === "text" ? replacer.find(".sp-preview") : replacer.find(".sp-preview-inner"),  //Donna
+            previewElement = replacer.find(".sp-preview-inner"),                                        // Donna
             initialColor = opts.color || (isInput && boundElement.val()),
             colorOnShow = false,
             preferredFormat = opts.preferredFormat,
@@ -1310,9 +1322,7 @@
     */
     var dataID = "spectrum.id";
     $.fn.spectrum = function (options, extra) {
-
         if (typeof options == "string") {
-
             var returnValue = this;
             var args = Array.prototype.slice.call( arguments, 1 );
 
