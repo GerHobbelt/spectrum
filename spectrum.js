@@ -64,6 +64,7 @@
         className: "", // Deprecated - use containerClassName and replacerClassName instead.
         containerClassName: "",
         replacerClassName: "",
+        type: "text", // Donna
         showAlpha: false,
         showAlphaText: false,
         theme: "sp-light",
@@ -72,6 +73,7 @@
         disabled: false
     },
     spectrums = [],
+    replaceInput,
     IE = !!/msie/i.exec( window.navigator.userAgent ),
     rgbaSupport = (function() {
         function contains( str, substr ) {
@@ -87,12 +89,14 @@
         var colorInput = $("<input type='color' value='!' />")[0];
         return colorInput.type === "color" && colorInput.value !== "!";
     })(),
-    replaceInput = [
-        "<div class='sp-replacer'>",
-            "<div class='sp-preview'><div class='sp-preview-inner'></div></div>",
-            "<div class='sp-dd'>&#9660;</div>",
-        "</div>"
-    ].join(''),
+    /* Donna Start - Moved this elsewhere. */
+    // replaceInput = [
+    //     "<div class='sp-replacer'>",
+    //         "<div class='sp-preview'><div class='sp-preview-inner'></div></div>",
+    //         "<div class='sp-dd'>&#9660;</div>",
+    //     "</div>"
+    // ].join(''),
+    /* Donna End */
     markup = (function () {
 
         // IE does not support gradients with multiple stops, so we need to simulate
@@ -104,6 +108,7 @@
             }
         }
 
+        /* Donna Start - Changed sp-choose and sp-cancel HTML. */
         return [
             "<div class='sp-container sp-hidden'>",
                 "<div class='sp-palette-container'>",
@@ -144,12 +149,14 @@
                     "</div>",
                     "<div class='sp-initial sp-thumb sp-cf'></div>",
                     "<div class='sp-button-container sp-cf'>",
-                        "<a class='sp-cancel' href='#'></a>",
-                        "<button type='button' class='sp-choose'></button>",
+                        "<button type='button' class='sp-choose'><i class='fa fa-check fa-white '></i></button>",
+                        "<span class='sp-btn-spacer'/>",
+                        "<button type='button' class='sp-cancel'><i class='fa fa-times fa-white '></i></button>",
                     "</div>",
                 "</div>",
             "</div>"
         ].join("");
+        /* Donna End */
     })();
 
     function paletteTemplate (p, color, className, opts) {
@@ -194,6 +201,43 @@
             'hide': bind(opts.hide, callbackContext),
             'beforeShow': bind(opts.beforeShow, callbackContext)
         };
+
+        /* Donna Start - Render different markup for text color picker. */
+        if (opts.type === "text") {
+          replaceInput = [
+            "<div class='sp-replacer text-color-picker'>",
+              "<div class='sp-preview'>",
+                "<div class='sp-preview-inner'>",
+                  "<div class='sp-preview-char'>A</div>",
+                "</div>",
+              "</div>",
+              "<b class='caret'></b>",
+            "</div>"
+          ].join('');
+        }
+        else if (opts.type === "highlight") {
+          replaceInput = [
+            "<div class='sp-replacer highlight-color-picker'>",
+              "<div class='sp-preview'>",
+                "<div class='sp-preview-inner'>",
+                  "<img src='http://s3.amazonaws.com/rise-common-test/scripts/spectrum/images/text-highlight.png'>",
+                "</div>",
+              "</div>",
+              "<b class='caret'></b>",
+            "</div>"
+          ].join('');
+        }
+        else if (opts.type === "background") {
+          replaceInput = [
+            "<div class='sp-replacer background-color-picker'>",
+                "<div class='sp-preview'>",
+                  "<div class='sp-preview-inner'></div>",
+                  "</div>",
+                "<b class='caret'></b>",
+            "</div>"
+          ].join('');
+        }
+        /* Donna End */
 
         return opts;
     }
@@ -254,7 +298,7 @@
             shouldReplace = isInput && !flat,
             replacer = (shouldReplace) ? $(replaceInput).addClass(theme).addClass(opts.className).addClass(opts.replacerClassName) : $([]),
             offsetElement = (shouldReplace) ? replacer : boundElement,
-            previewElement = replacer.find(".sp-preview-inner"),
+            previewElement = opts.type === "text" ? replacer.find(".sp-preview") : replacer.find(".sp-preview-inner"),  //Donna
             initialColor = opts.color || (isInput && boundElement.val()),
             colorOnShow = false,
             preferredFormat = opts.preferredFormat,
@@ -359,7 +403,9 @@
                 } 
             });
 
-            cancelButton.text(opts.cancelText);
+            //cancelButton.text(opts.cancelText);
+            cancelButton[0].innerHTML = opts.cancelText + ' ' + cancelButton[0].innerHTML;
+
             cancelButton.bind("click.spectrum", function (e) {
                 e.stopPropagation();
                 e.preventDefault();
@@ -375,13 +421,15 @@
                 isEmpty = true;
 
                 move();
+
                 if (flat) {
                     //for the flat style, this is a change event
                     updateOriginalInput(true);
                 }
             });
 
-            chooseButton.text(opts.chooseText);
+            //chooseButton.text(opts.chooseText);
+            chooseButton[0].innerHTML = opts.chooseText + ' ' + chooseButton[0].innerHTML;
 
             chooseButton.bind("click.spectrum", function (e) {
                 e.stopPropagation();
@@ -394,7 +442,9 @@
                 alphaText.html(opts.alphaText);
             }
             
-            toggleButton.text(opts.showPaletteOnly ? opts.togglePaletteMoreText : opts.togglePaletteLessText);
+            //toggleButton.text(opts.showPaletteOnly ? opts.togglePaletteMoreText : opts.togglePaletteLessText);
+            toggleButton[0].innerHTML = (opts.showPaletteOnly ? opts.togglePaletteMoreText : opts.togglePaletteLessText) + ' ' + toggleButton[0].innerHTML;
+
             toggleButton.bind("click.spectrum", function (e) {
                 e.stopPropagation();
                 e.preventDefault();
@@ -774,7 +824,15 @@
 
             //reset background info for preview element
             previewElement.removeClass("sp-clear-display");
-            previewElement.css('background-color', 'transparent');
+
+            /* Donna Start */
+            if (opts.type === "text") {
+              previewElement.css('border-color', 'transparent');
+            }
+            else {
+              previewElement.css('background-color', 'transparent');
+            }
+            /* Donna End */
 
             if (!realColor && allowEmpty) {
                 // Update the replaced elements background with icon indicating no color selection
@@ -786,11 +844,26 @@
 
                 // Update the replaced elements background color (with actual selected color)
                 if (rgbaSupport || realColor.alpha === 1) {
+                  /* Donna Start */
+                  if (opts.type === "text") {
+                    previewElement.css("border-color", realRgb);
+                  }
+                  else {
                     previewElement.css("background-color", realRgb);
+                  }
+                  /* Donna End */
                 }
                 else {
+                  /* Donna Start */
+                  if (opts.type === "text") {
+                    previewElement.css("border-color", "transparent");
+                  }
+                  else {
                     previewElement.css("background-color", "transparent");
-                    previewElement.css("filter", realColor.toFilter());
+                  }
+                  /* Donna End */
+
+                  previewElement.css("filter", realColor.toFilter());
                 }
 
                 if (opts.showAlpha) {
