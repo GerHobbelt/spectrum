@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Spectrum - Automatic Color Demo</title>
+
+    <meta name="description" content="Spectrum is a JavaScript colorpicker plugin using the jQuery framework.  It is highly customizable, but can also be used as a simple input type=color polyfill">
+    <meta name="author" content="Brian Grinstead and Spectrum contributors">
+
+    <link rel="stylesheet" type="text/css" href="../spectrum.css">
+    <link rel="stylesheet" type="text/css" href="../docs/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../docs/docs.css">
+    <script type="text/javascript" src="../lib/_/tinycolor.js"></script>
+    <script type="text/javascript" src="../docs/jquery-2.x.js"></script>
+    <script type="text/javascript" src="../spectrum.js"></script>
+</head>
+<body>
+<div id='header'>
+    <h1><a href='http://bgrins.github.com/spectrum'>Spectrum</a></h1> <h2><em>The No Hassle jQuery Colorpicker</em></h2>
+    <div id='links'>
+        View the <a href='http://github.com/bgrins/spectrum'>Source code</a>.
+        Spectrum is a project by <a href='http://twitter.com/bgrins'>@bgrins</a>.
+    </div>
+    <br style='clear:both;' />
+</div>
+
+<div class="container">
+    <h2>Automatic Color Option</h2>
+        
+    <div id="test" style="height: 50px; width: 100%; margin-top: 1em; margin-bottom: 1em; background-color: #084B8A;"></div>
+    
+	<label>
+	no explicit AutoColor set
+    <input type='text' id="auto1" />
+	</label>
+        	
+	<label>
+	explicit autoColor
+    <input type='text' id="auto2" />
+	</label>
+        	
+	<label>
+	explicit RANDOM autoColor function
+    <input type='text' id="auto3" />
+	</label>
+        	
+	<label>
+	explicit autoColor function: picks the color from the color box above
+    <input type='text' id="auto4" />
+	</label>
+</div>
+
+    <script>
+        
+        var palette = [
+            ['black', 'white', 'blanchedalmond'],
+            ['rgb(255, 128, 0);', 'hsv 100 70 50', 'lightyellow']
+        ];
+        
+        var rndColor = function() {
+            var rnd = Math.random();
+            
+            return (rnd > 0.5) ? "#0404B4" : "#FF0000";
+        };
+        
+        var divColor = function () {
+            return $('#test').css('background-color');
+        };
+        
+        $("#auto1").spectrum({
+            showAutoColor: true, // autoColor: [string], autoColorFunction: [Function]
+            showPalette: true,
+            color: "#f00",
+            palette: palette
+        });
+        
+        $("#auto2").spectrum({
+            showAutoColor: true,
+            autoColor: "#a1a2a3",
+            autoColorTitle: 'Default Color',
+            showPalette: true,
+            color: "#f00",
+            palette: palette
+        });
+        
+        $("#auto3").spectrum({
+            showAutoColor: true,
+            autoColorFunction: rndColor,
+            autoColorTitle: 'OS Theme Color',
+            showPalette: true,
+            color: "#f00",
+            palette: palette
+        });
+        
+        $("#auto4").spectrum({
+            showAutoColor: true,
+            autoColorFunction: divColor,
+            autoColorTitle: 'DOM Object Color',
+            showPalette: true,
+            showInput: true,
+            color: "#f00",
+            palette: palette,
+            change: function(color, isAuto) { console.log('change: ' + color + ' - auto:' + isAuto); },
+            auto: function(color) { console.log('automatic color: ' + color); }
+        });
+    </script>
+</body>
+</html>
