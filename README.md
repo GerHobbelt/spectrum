@@ -32,6 +32,13 @@ Spectrum is registered as a package with [Bower](http://bower.io/), so it can be
 
     bower install spectrum
 
+### Using spectrum with a CDN
+
+CDN provided by [cdnjs](https://cdnjs.com/libraries/spectrum)
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/spectrum/1.6.0/spectrum.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/spectrum/1.6.0/spectrum.min.css">
+
 ### Continuous Integration
 
 [![Build Status](https://secure.travis-ci.org/bgrins/spectrum.png?branch=master)](http://travis-ci.org/bgrins/spectrum)

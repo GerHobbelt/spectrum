@@ -480,6 +480,10 @@
                 e.stopPropagation();
                 e.preventDefault();
 
+                if (IE && textInput.is(":focus")) {
+                    textInput.trigger('change');
+                }
+
                 chooseAndClose();
             });
             
