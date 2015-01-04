@@ -1,4 +1,4 @@
-// Spectrum Colorpicker v1.5.2
+// Spectrum Colorpicker v1.6.0
 // https://github.com/bgrins/spectrum
 // Author: Brian Grinstead
 // License: MIT
@@ -75,7 +75,8 @@
         autoColorFunction: null,
         autoColorTitle: "Automatic",
         positioning: 'absolute',
-        disabled: false
+        disabled: false,
+        offset: null
     },
     spectrums = [],
     replaceInput,
@@ -505,7 +506,7 @@
                 }
                 applyOptions();
             });
-            
+
             draggable(alphaSlider, function (dragX, dragY, e) {
                 currentAlpha = (dragX / alphaWidth);
                 isEmpty = false;
@@ -1082,8 +1083,8 @@
 
             if (!flat) {
                 container.css("position", opts.positioning);
-                if (typeof opts.position === 'object') {
-                    container.offset(opts.position);
+                if (opts.offset) {
+                    container.offset(opts.offset);
                 } else {
                     container.offset(getOffset(container, offsetElement));
                 }
@@ -1135,8 +1136,8 @@
             offsetElement.addClass("sp-disabled");
         }
 
-        function position(coord) {
-            opts.position = coord;
+        function setOffset(coord) {
+            opts.offset = coord;
             reflow();
         }
 
@@ -1150,7 +1151,7 @@
             option: option,
             enable: enable,
             disable: disable,
-            position: position,
+            offset: setOffset,
             set: function (c) {
                 set(c);
                 updateOriginalInput();
