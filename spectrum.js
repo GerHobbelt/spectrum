@@ -628,7 +628,7 @@
                         });
                     }
                 }
-                catch(e) { }
+                catch (e) { }
 
                 try {
                     selectionPalette = window.localStorage[localStorageKey].split(";");
@@ -642,7 +642,7 @@
                 var rgb = tinycolor(color).toRgbString();
                 if (!paletteLookup[rgb] && $.inArray(rgb, selectionPalette) === -1) {
                     selectionPalette.push(rgb);
-                    while(selectionPalette.length > maxSelectionSize) {
+                    while (selectionPalette.length > maxSelectionSize) {
                         selectionPalette.shift();
                     }
                 }
@@ -651,7 +651,7 @@
                     try {
                         window.localStorage[localStorageKey] = selectionPalette.join(";");
                     }
-                    catch(e) { }
+                    catch (e) { }
                 }
             }
         }
