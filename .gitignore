@@ -4,3 +4,8 @@ bower_components
 .DS_Store
 /nbproject/private/
 
+
+# analyze_github script cache:
+__forks.info__/
+__forks__.bulk_dump
+
