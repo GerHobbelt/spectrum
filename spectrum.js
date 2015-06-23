@@ -706,9 +706,6 @@
 
             if (newColor && newColor.isValid() && !ignoreFormatChange) {
                 currentPreferredFormat = preferredFormat || newColor.getFormat();
-                if (flat) {
-                    colorOnShow = newColor;
-                }
             }
         }
 
