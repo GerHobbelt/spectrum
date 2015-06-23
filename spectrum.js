@@ -655,7 +655,7 @@
             if (clickoutFiresChange) {
                 updateOriginalInput(true);
             }
-            else {
+            else if (!flat) {
                 revert();
             }
             hide();
@@ -706,6 +706,9 @@
 
             if (newColor && newColor.isValid() && !ignoreFormatChange) {
                 currentPreferredFormat = preferredFormat || newColor.getFormat();
+                if (flat) {
+                    colorOnShow = newColor;
+                }
             }
         }
 
@@ -871,7 +874,7 @@
                 boundElement.val(displayColor);
             }
 
-            if (fireCallback && hasChanged) {
+            if (fireCallback && (hasChanged || flat)) {
                 callbacks.change(color);
                 boundElement.trigger('change', [ color ]);
             }
