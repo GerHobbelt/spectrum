@@ -1066,7 +1066,7 @@
                 boundElement.val(displayColor);
             }
 
-            if (fireCallback && hasChanged) {
+            if (fireCallback && (hasChanged || flat)) {
                 callbacks.change(color, isAutoColor);
                 boundElement.trigger('change', [ color ]);
                 
