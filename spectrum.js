@@ -204,7 +204,6 @@
         
         return view.join('');
     }
-    
 
     function hideAll() {
         for (var i = 0; i < spectrums.length; i++) {
@@ -444,8 +443,7 @@
                 } 
             });
 
-            //cancelButton.text(opts.cancelText);
-            cancelButton[0].innerHTML = opts.cancelText + ' ' + cancelButton[0].innerHTML;
+            cancelButton.text(opts.cancelText);
 
             cancelButton.bind("click.spectrum", function (e) {
                 e.stopPropagation();
@@ -469,8 +467,7 @@
                 }
             });
 
-            //chooseButton.text(opts.chooseText);
-            chooseButton[0].innerHTML = opts.chooseText + ' ' + chooseButton[0].innerHTML;
+            chooseButton.text(opts.chooseText);
 
             chooseButton.bind("click.spectrum", function (e) {
                 e.stopPropagation();
@@ -487,8 +484,7 @@
                 alphaText.html(opts.alphaText);
             }
             
-            //toggleButton.text(opts.showPaletteOnly ? opts.togglePaletteMoreText : opts.togglePaletteLessText);
-            toggleButton[0].innerHTML = (opts.showPaletteOnly ? opts.togglePaletteMoreText : opts.togglePaletteLessText) + ' ' + toggleButton[0].innerHTML;
+            toggleButton.text(opts.showPaletteOnly ? opts.togglePaletteMoreText : opts.togglePaletteLessText);
 
             toggleButton.bind("click.spectrum", function (e) {
                 e.stopPropagation();
@@ -1401,9 +1397,9 @@
     $.fn.spectrum.loadOpts = {};
     $.fn.spectrum.draggable = draggable;
     $.fn.spectrum.defaults = defaultOpts;
-    $.fn.spectrum.inputTypeColorSupport = function inputTypeColorSupport() {
+    $.fn.spectrum.inputTypeColorSupport = function __inputTypeColorSupport__() {
         if (typeof inputTypeColorSupport._cachedResult === "undefined") {
-            var colorInput = $("<input type='color'/>")[0]; // if color element is supported, value will default to not null
+            var colorInput = $("<input type='color'/>")[0]; // if color element is supported, value will default to a color (#000000), not null
             inputTypeColorSupport._cachedResult = colorInput.type === "color" && colorInput.value !== "";
         }
         return inputTypeColorSupport._cachedResult;
@@ -1413,9 +1409,12 @@
     $.spectrum.localization = { };
     $.spectrum.palettes = { };
 
-    $.fn.spectrum.processNativeColorInputs = function () {
+    // @param overrideInputTypeColorSupport {boolean} 
+    //                   TRUE: override all HTML5 input[type=color] elements and use spectrum for the color selection.
+    //                   (In fact we then act as if the browser does not support HTML5 color inputs.)
+    $.fn.spectrum.processNativeColorInputs = function (overrideInputTypeColorSupport) {
         var colorInputs = $("input[type=color]");
-        if (colorInputs.length && !inputTypeColorSupport()) {
+        if (colorInputs.length && (overrideInputTypeColorSupport || !inputTypeColorSupport())) {
             colorInputs.spectrum({
                 preferredFormat: "hex6"
             });
