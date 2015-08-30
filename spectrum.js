@@ -808,7 +808,7 @@
             if (clickoutFiresChange) {
                 updateOriginalInput(true);
             }
-            else {
+            else if (!flat) {
                 revert();
             }
             hide();
