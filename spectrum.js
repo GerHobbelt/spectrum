@@ -54,6 +54,9 @@
         localStorageKey: false,
         appendTo: "body",
         maxSelectionSize: 7,
+        inputAriaLabel: "Enter a color",
+        initialSwatchAriaLabel: "Initial color",
+        currentSwatchAriaLabel: "Current color",
         cancelText: "cancel",
         chooseText: "choose",
         togglePaletteMoreText: "more",
@@ -115,7 +118,7 @@
             "<div class='sp-container sp-hidden'>",
                 "<div class='sp-auto-container'></div>",
                 "<div class='sp-palette-container'>",
-                    "<div class='sp-palette sp-thumb sp-cf'></div>",
+                    "<div class='sp-palette sp-thumb sp-cf' tabindex='0'></div>",
                     "<div class='sp-palette-button-container sp-cf'>",
                         "<button type='button' class='sp-palette-toggle'></button>",
                     "</div>",
@@ -173,7 +176,7 @@
                 c += (tinycolor.equals(color, current)) ? " sp-thumb-active sp-thumb-focus" : "";
                 var formattedString = tiny.toString(opts.preferredFormat || "rgb");
                 var swatchStyle = rgbaSupport ? ("background-color:" + tiny.toRgbString()) : "filter:" + tiny.toFilter();
-                html.push('<span ' + ((tinycolor.equals(color, current)) ? 'tabindex="0" ' : '') + 'title="' + formattedString + '" data-color="' + tiny.toRgbString() + '" class="' + c + '"><span class="sp-thumb-inner" style="' + swatchStyle + ';" /></span>');
+                html.push('<span title="' + formattedString + '" data-color="' + tiny.toRgbString() + '" class="' + c + '"><span class="sp-thumb-inner" style="' + swatchStyle + ';" /></span>');
             } else {
                 var cls = 'sp-clear-display';
                 html.push($('<div />')
@@ -437,66 +440,62 @@
             // Handle arrow keys and Enter -- for keyboard navigation
             paletteContainer.keydown(function(e) {
 
-              var focusedColor;
+                var focusedColor;
 
-              // Arrow key
-              if ($.inArray(e.keyCode, [37, 38, 39, 40]) >= 0) {
+                // Arrow key
+                if ($.inArray(e.keyCode, [37, 38, 39, 40]) >= 0) {
 
-                // Currently-focused color
-                focusedColor = $(this).find(".sp-thumb-focus");
+                    // Currently-focused color
+                    focusedColor = $(this).find(".sp-thumb-focus");
 
-                // Find the color above/below/before/after the focused color
-                var newFocusedColor;
-                if (e.keyCode == 37 || e.keyCode == 39) {
-                  // left or right
-                  newFocusedColor = e.keyCode == 37 ? focusedColor.prev() : focusedColor.next();
-                }
-                else if (e.keyCode == 38 || e.keyCode == 40) {
-                  // up or down
-                  var row = e.keyCode == 38 ? focusedColor.parent().prev() : focusedColor.parent().next();
-                  if (row.length > 0) {
-                    newFocusedColor = row.children().eq(focusedColor.index());
-                  }
-                }
+                    var newFocusedColor;
+                  
+                    if (focusedColor.length > 0) {
+                        // Find the color above/below/before/after the currently-focused color
+                        if (e.keyCode == 37 || e.keyCode == 39) {
+                            // left or right
+                            newFocusedColor = e.keyCode == 37 ? focusedColor.prev() : focusedColor.next();
+                        }
+                        else if (e.keyCode == 38 || e.keyCode == 40) {
+                            // up or down
+                            var row = e.keyCode == 38 ? focusedColor.parent().prev() : focusedColor.parent().next();
+                            if (row.length > 0) {
+                                newFocusedColor = row.children().eq(focusedColor.index());
+                            }
+                        }
+                    }
+                    else {
+                        // No currently-focused color, so just choose the first one
+                        newFocusedColor = $(this).find(".sp-thumb-el").first();
+                    }
  
-                if (newFocusedColor && newFocusedColor.length > 0)
-                {
-                  newFocusedColor.focus();
+                    // Give focus to the new focused color
+                    if (newFocusedColor && newFocusedColor.length > 0) {
+                        newFocusedColor.focus();
 
-                  focusedColor.attr("tabindex", -1);
-                  focusedColor.removeClass("sp-thumb-focus");
+                        focusedColor.removeClass("sp-thumb-focus");
+                        newFocusedColor.addClass("sp-thumb-focus");
+                    }
 
-                  newFocusedColor.attr("tabindex", 0);
-                  newFocusedColor.addClass("sp-thumb-focus");
+                    return false;
                 }
 
-                return false;
-              }
+                // Enter key
+                else if (e.keyCode == 13) {
 
-              // Enter key
-              else if (e.keyCode == 13) {
+                    // Currently-focused color
+                    focusedColor = $(this).find(".sp-thumb-focus");
+                    if (focusedColor) {
+                        set(focusedColor.data("color"));
+                        move();
+                        updateOriginalInput(true);
+                        if (opts.hideAfterPaletteSelect) {
+                            hide();
+                        }
+                    }
 
-                // Currently-focused color
-                focusedColor = $(this).find(".sp-thumb-focus");
-                if (focusedColor) {
-                  set(focusedColor.data("color"));
-                  move();
-                  updateOriginalInput(true);
-                  if (opts.hideAfterPaletteSelect) {
-                    hide();
-                  }
+                    return false;
                 }
-
-                return false;
-              }
-
-              // Escape (TODO)
-              else if (e.keyCode == 27) {
-
-                // TODO: close()
-
-              }
-
             });
 
             // Handle user typed input
@@ -762,6 +761,23 @@
                 var initial = colorOnShow;
                 var current = get();
                 initialColorContainer.html(paletteTemplate([initial, current], current, "sp-palette-row-initial", opts));
+
+                // Accessibility for initial color
+                var thumbs = initialColorContainer.find('.sp-thumb-el');
+                if (thumbs.length === 2) {
+                    $(thumbs[0]).attr("tabindex", 0);
+                    $(thumbs[0]).attr("aria-label", opts.initialSwatchAriaLabel);
+                    $(thumbs[1]).attr("tabindex", 0);
+                    $(thumbs[1]).attr("aria-label", opts.currentSwatchAriaLabel);
+
+                    // Clicking Enter on the Initial color selects it
+                    $(thumbs[0]).keydown(function(e) {
+                        if (e.keyCode == 13) {
+                            set($(e.target).closest(".sp-thumb-el").data("color"));
+                            move();
+                        }
+                    });
+                }
             }
         }
 
@@ -1053,6 +1069,7 @@
             // Update the text entry input as it changes happen
             if (opts.showInput) {
                 textInput.val(displayColor);
+                textInput.attr("aria-label", opts.inputAriaLabel);
             }
 
             if (opts.showPalette) {
