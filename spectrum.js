@@ -32,6 +32,7 @@
         beforeShow: noop,
         move: noop,
         change: noop,
+        validationErr: noop,
         show: noop,
         hide: noop,
         auto: noop,
@@ -218,6 +219,7 @@
         opts.callbacks = {
             'move': bind(opts.move, callbackContext),
             'change': bind(opts.change, callbackContext),
+            'validationErr': bind(opts.validationErr, callbackContext),
             'show': bind(opts.show, callbackContext),
             'hide': bind(opts.hide, callbackContext),
             'beforeShow': bind(opts.beforeShow, callbackContext),
@@ -644,7 +646,7 @@
                 else {
                     set($(e.target).closest(".sp-thumb-el").data("color"));
                     move();
-                    updateOriginalInput(false);
+                    updateOriginalInput(opts.hideAfterPaletteSelect);
                     if (opts.hideAfterPaletteSelect) {
                       hide();
                     }
@@ -795,6 +797,7 @@
                 }
                 else {
                     textInput.addClass("sp-validation-error");
+                    callbacks.validationErr(value);
                 }
             }
         }
@@ -1190,6 +1193,11 @@
             spectrums[spect.id] = null;
         }
 
+        function changeInitialColor(initColor) {
+            colorOnShow = initColor;
+            drawInitial();
+        }
+
         function option(optionName, optionValue) {
             if (optionName === undefined) {
                 return $.extend({}, opts);
@@ -1237,6 +1245,7 @@
             },
             get: get,
             destroy: destroy,
+            changeInitialColor: changeInitialColor,
             container: container
         };
 
