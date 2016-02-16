@@ -194,6 +194,7 @@
             alphaWidth = 0,
             alphaSlideHelperWidth = 0,
             slideHelperHeight = 0,
+            slideHelperWidth = 0,
             currentHue = 0,
             currentSaturation = 0,
             currentValue = 0,
@@ -395,7 +396,7 @@
             }, dragStart, dragStop);
 
             draggable(slider, function (dragX, dragY) {
-                currentHue = parseFloat(dragY / slideHeight);
+                currentHue = parseFloat(dragX / slideWidth);
                 isEmpty = false;
                 if (!opts.showAlpha) {
                     currentAlpha = 1;
@@ -848,9 +849,9 @@
                 });
 
                 // Where to show the bar that displays your current selected hue
-                var slideY = (currentHue) * slideHeight;
+                var slideX = (currentHue) * slideWidth;
                 slideHelper.css({
-                    "top": (slideY - slideHelperHeight) + "px"
+                    "left": (slideX - slideHelperWidth) + "px"
                 });
             }
         }
@@ -886,6 +887,7 @@
             slideWidth = slider.width();
             slideHeight = slider.height();
             slideHelperHeight = slideHelper.height();
+            slideHelperWidth = slideHelper.width();
             alphaWidth = alphaSlider.width();
             alphaSlideHelperWidth = alphaSlideHelper.width();
 
@@ -988,27 +990,17 @@
         var viewWidth = docElem.clientWidth + $(doc).scrollLeft();
         var viewHeight = docElem.clientHeight + $(doc).scrollTop();
         var offset = input.offset();
-        var offsetLeft = offset.left;
-        var offsetTop = offset.top;
+        offset.top += inputHeight;
 
-        offsetTop += inputHeight;
+        offset.left -=
+            Math.min(offset.left, (offset.left + dpWidth > viewWidth && viewWidth > dpWidth) ?
+            Math.abs(offset.left + dpWidth - viewWidth) : 0);
 
-        offsetLeft -=
-            Math.min(offsetLeft, (offsetLeft + dpWidth > viewWidth && viewWidth > dpWidth) ?
-            Math.abs(offsetLeft + dpWidth - viewWidth) : 0);
-
-        offsetTop -=
-            Math.min(offsetTop, ((offsetTop + dpHeight > viewHeight && viewHeight > dpHeight) ?
+        offset.top -=
+            Math.min(offset.top, ((offset.top + dpHeight > viewHeight && viewHeight > dpHeight) ?
             Math.abs(dpHeight + inputHeight - extraY) : extraY));
 
-        return {
-            top: offsetTop,
-            bottom: offset.bottom,
-            left: offsetLeft,
-            right: offset.right,
-            width: offset.width,
-            height: offset.height
-        };
+        return offset;
     }
 
     /**

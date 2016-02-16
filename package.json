@@ -1,14 +1,14 @@
 {
-    "name": "spectrum-colorpicker",
+    "name": "spectrum-elevio",
     "description": "Spectrum: the no hassle jQuery colorpicker",
     "version": "1.8.0",
     "main": "spectrum.js",
     "license": "MIT",
     "keywords": ["jquery-plugin", "ecosystem:jquery", "color", "colorpicker", "ui"],
-    "homepage": "http://bgrins.github.com/spectrum",
+    "homepage": "https://github.com/elevio/spectrum",
     "repository": {
         "type": "git",
-        "url": "https://bgrins.github.com/spectrum"
+        "url": "https://github.com/elevio/spectrum"
     },
     "author": {
         "name" : "Brian Grinstead",
