@@ -58,7 +58,10 @@
         palette: [["#ffffff", "#000000", "#ff0000", "#ff8000", "#ffff00", "#008000", "#0000ff", "#4b0082", "#9400d3"]],
         selectionPalette: [],
         disabled: false,
-        offset: null
+        offset: null,
+        replacerIcon: "&#9660;",
+        borderPreview: false,
+        backgroundPreview: true
     },
     spectrums = [],
     IE = !!/msie/i.exec( window.navigator.userAgent ),
@@ -72,12 +75,12 @@
         style.cssText = 'background-color:rgba(0,0,0,.5)';
         return contains(style.backgroundColor, 'rgba') || contains(style.backgroundColor, 'hsla');
     })(),
-    replaceInput = [
+    replaceInput = function(icon) { return [
         "<div class='sp-replacer'>",
             "<div class='sp-preview'><div class='sp-preview-inner'></div></div>",
-            "<div class='sp-dd'>&#9660;</div>",
+            "<div class='sp-dd'>"+icon+"</div>",
         "</div>"
-    ].join(''),
+    ].join(''); },
     markup = (function () {
 
         // IE does not support gradients with multiple stops, so we need to simulate
@@ -229,7 +232,7 @@
             isInput = boundElement.is("input"),
             isInputTypeColor = isInput && boundElement.attr("type") === "color" && inputTypeColorSupport(),
             shouldReplace = isInput && !flat,
-            replacer = (shouldReplace) ? $(replaceInput).addClass(theme).addClass(opts.className).addClass(opts.replacerClassName) : $([]),
+            replacer = (shouldReplace) ? $(replaceInput(opts.replacerIcon)).addClass(theme).addClass(opts.className).addClass(opts.replacerClassName) : $([]),
             offsetElement = (shouldReplace) ? replacer : boundElement,
             previewElement = replacer.find(".sp-preview-inner"),
             initialColor = opts.color || (isInput && boundElement.val()),
@@ -765,7 +768,10 @@
 
              //reset background info for preview element
             previewElement.removeClass("sp-clear-display");
-            previewElement.css('background-color', 'transparent');
+            previewElement.css({
+                'background-color': 'transparent',
+                'border-color': 'transparent'
+            });
 
             if (!realColor && allowEmpty) {
                 // Update the replaced elements background with icon indicating no color selection
@@ -777,10 +783,16 @@
 
                 // Update the replaced elements background color (with actual selected color)
                 if (rgbaSupport || realColor.alpha === 1) {
-                    previewElement.css("background-color", realRgb);
+                    previewElement.css({
+                        'background-color': opts.backgroundPreview ? realRgb : "transparent",
+                        'border-color': opts.borderPreview ? realRgb : "transparent"
+                    });
                 }
                 else {
-                    previewElement.css("background-color", "transparent");
+                    previewElement.css({
+                        'background-color': 'transparent',
+                        'border-color': 'transparent'
+                    });
                     previewElement.css("filter", realColor.toFilter());
                 }
 
