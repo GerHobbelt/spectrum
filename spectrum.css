@@ -299,7 +299,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
     border: 1px solid red;
     background: #fdd;
 }
-.sp-picker-container , .sp-palette-container {
+.sp-picker-container , .sp-palette-container, .sp-tags-container {
     float:left;
     position: relative;
     padding: 10px;
