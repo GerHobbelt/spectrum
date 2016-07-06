@@ -14,5 +14,6 @@ $("#custom").spectrum({
     ],
     showButtons: false,
     showPalette: true,
+    showTags: true,
     preferredFormat: "hex"
 });

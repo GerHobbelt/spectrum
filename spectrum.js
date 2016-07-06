@@ -36,6 +36,7 @@
         clickoutFiresChange: true,
         showInitial: false,
         showPalette: false,
+        showTags: false,
         showPaletteOnly: false,
         hideAfterPaletteSelect: false,
         togglePaletteOnly: false,
@@ -56,6 +57,7 @@
         showAlpha: false,
         theme: "sp-light",
         palette: [["#ffffff", "#000000", "#ff0000", "#ff8000", "#ffff00", "#008000", "#0000ff", "#4b0082", "#9400d3"]],
+        tags: ["#ffffff", "#000000", "#ff0000", "#ff8000", "#ffff00", "#008000", "#0000ff", "#4b0082", "#9400d3"],
         selectionPalette: [],
         disabled: false,
         offset: null
@@ -202,7 +204,9 @@
             currentValue = 0,
             currentAlpha = 1,
             palette = [],
+            tags = [],
             paletteArray = [],
+            tagsArray = [],
             paletteLookup = {},
             selectionPalette = opts.selectionPalette.slice(0),
             maxSelectionSize = opts.maxSelectionSize,
@@ -224,7 +228,7 @@
             alphaSlideHelper = container.find(".sp-alpha-handle"),
             textInput = container.find(".sp-input"),
             paletteContainer = container.find(".sp-palette"),
-            tagContainer = container.find(".sp-palette"),
+            tagContainer = container.find(".sp-tags"),
             initialColorContainer = container.find(".sp-initial"),
             cancelButton = container.find(".sp-cancel"),
             clearButton = container.find(".sp-clear"),
@@ -261,6 +265,11 @@
                         paletteLookup[rgb] = true;
                     }
                 }
+            }
+
+            if (opts.tags) {
+                tags = opts.tags.slice(0);
+                tagsArray = $.isArray(tags[0]) ? tags : [tags];
             }
 
             container.toggleClass("sp-flat", flat);
@@ -559,6 +568,23 @@
             paletteContainer.html(html.join(""));
         }
 
+        function drawTags() {
+
+            var currentColor = get();
+
+            var html = $.map(tagsArray, function (tag, i) {
+                return paletteTemplate(tag, currentColor, "sp-palette-row sp-palette-row-" + i, opts);
+            });
+
+            updateSelectionPaletteFromStorage();
+
+            if (selectionPalette) {
+                html.push(paletteTemplate(getUniqueSelectionPalette(), currentColor, "sp-palette-row sp-palette-row-selection", opts));
+            }
+
+            tagContainer.html(html.join(""));
+        }
+
         function drawInitial() {
             if (opts.showInitial) {
                 var initial = colorOnShow;
@@ -819,6 +845,10 @@
                 drawPalette();
             }
 
+            if (opts.showTags) {
+                drawTags();
+            }
+
             drawInitial();
         }
 
@@ -914,6 +944,10 @@
 
             if (opts.showPalette) {
                 drawPalette();
+            }
+
+            if (opts.showTags) {
+                drawTags();
             }
 
             boundElement.trigger('reflow.spectrum');

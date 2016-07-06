@@ -320,7 +320,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
     border: 0;
 }
 
-.sp-palette .sp-thumb-el {
+.sp-palette .sp-thumb-el, .sp-tags .sp-thumb-el {
     display: block;
     position:relative;
     float:left;
@@ -405,7 +405,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
     *width: 220px;
     max-width: 220px;
 }
-.sp-palette .sp-thumb-el {
+.sp-palette .sp-thumb-el, .sp-tags .sp-thumb-el {
     width:16px;
     height: 16px;
     margin:2px 1px;
