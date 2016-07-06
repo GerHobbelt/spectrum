@@ -12,6 +12,7 @@ $("#custom").spectrum({
         ["#900", "#b45f06", "#bf9000", "#38761d", "#134f5c", "#0b5394", "#351c75", "#741b47"],
         ["#600", "#783f04", "#7f6000", "#274e13", "#0c343d", "#073763", "#20124d", "#4c1130"]
     ],
+    tags: [{name: "A Tag", classes: "a-tag-class"}, {name: "Another Tag", classes: "another-tag-class"}],
     showButtons: false,
     showPalette: true,
     showTags: true,
