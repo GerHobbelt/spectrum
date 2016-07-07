@@ -59,6 +59,7 @@
         theme: "sp-light",
         palette: [["#ffffff", "#000000", "#ff0000", "#ff8000", "#ffff00", "#008000", "#0000ff", "#4b0082", "#9400d3"]],
         tags: [],
+        tagClassPostfix: "-bg",
         selectionPalette: [],
         disabled: false,
         offset: null
@@ -518,8 +519,8 @@
 
             function tagElementClick(e) {
                 var t = $(e.target).closest(".sp-tag-row");
-                var tag = t.data("tag-class-name");
-                // console.log("Tag clicked [" + t.data("tag-class-name") + "]");
+                var tag = t.data("tag-key");
+                // console.log("Tag clicked [" + t.data("tag-key") + "]");
 
                 if (callbacks.tagChange) {
                     callbacks.tagChange(tag)
@@ -621,7 +622,7 @@
             var html = [];
             var rowClasses = rowClass ? rowClass.split(" ") : [];
             rowClasses.push("sp-cf");
-            var thumbClasses = tag.className ? [tag.className] : [];
+            var thumbClasses = tag.key ? [tag.key + opts.tagClassPostfix] : [];
             thumbClasses.push("sp-thumb-el");
             var labelClasses = ["sp-tag-label"];
 
@@ -630,7 +631,7 @@
             // Label
             html.push("<span class='" + labelClasses.join(" ") + "'>" + tag.name + "</span>");
 
-            return "<div data-tag-class-name='" + tag.className + "' class='" + rowClasses.join(" ") + "'>" + html.join('') + "</div>";
+            return "<div data-tag-key='" + tag.key + "' class='" + rowClasses.join(" ") + "'>" + html.join('') + "</div>";
         }
 
         function drawInitial() {

@@ -12,10 +12,10 @@ $("#custom").spectrum({
         ["#900", "#b45f06", "#bf9000", "#38761d", "#134f5c", "#0b5394", "#351c75", "#741b47"],
         ["#600", "#783f04", "#7f6000", "#274e13", "#0c343d", "#073763", "#20124d", "#4c1130"]
     ],
-    tags: [{name: "A Tag", className: "a-tag-class"}, {name: "Another Tag", className: "another-tag-class"}],
+    tags: [{name: "A Tag", key: "a-tag-class"}, {name: "Another Tag", key: "another-tag-class"}],
     showButtons: false,
     showPalette: true,
-    showTags: false,
+    showTags: true,
     preferredFormat: "hex",
     tagChange: function(tag) {
         console.log("TAG CHANGED!!!!! " + tag);

@@ -14,6 +14,10 @@ License: MIT
     margin-bottom: 2px;
 }
 
+.sp-tag-row .sp-thumb-el {
+    background-image: none;
+}
+
 .sp-tag-row .sp-tag-label {
     margin-top: 2px;
     margin-left: 2px;

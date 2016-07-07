@@ -5,10 +5,10 @@ Author: Brian Grinstead
 License: MIT
 ***/
 
-.a-tag-class {
+.a-tag-class-bg {
     background: blue;
 }
 
-.another-tag-class {
+.another-tag-class-bg {
     background: red;
 }
