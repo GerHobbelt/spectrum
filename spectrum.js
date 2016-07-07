@@ -601,16 +601,20 @@
             tagContainer.html(html.join(""));
         }
 
-        function tagTemplate(tag, className, opts) {
+        function tagTemplate(tag, rowClass, opts) {
             var html = [];
-            var externalClasses = className ? className.split(" ") : [];
-            var classes = tag.classes ? tag.classes.split(" ") : [];
+            var rowClasses = rowClass ? rowClass.split(" ") : [];
+            rowClasses.push("sp-cf");
+            var thumbClasses = tag.className ? [tag.className] : [];
+            thumbClasses.push("sp-thumb-el");
+            var labelClasses = ["sp-tag-label"];
 
-            var classStr = externalClasses.concat(classes).join(" ");
+            // Thumb
+            html.push("<span class='" + thumbClasses.join(" ") + "' title='" + tag.name + "'/>");
+            // Label
+            html.push("<span class='" + labelClasses.join(" ") + "'>" + tag.name + "</span>");
 
-            html.push('<span title="' + tag.name + '"><span class="sp-thumb-inner" />' + tag.name + '</span>');
-
-            return "<div class='sp-cf " + classStr + "'>" + html.join('') + "</div>";
+            return "<div class='" + rowClasses.join(" ") + "'>" + html.join('') + "</div>";
         }
 
         function drawInitial() {

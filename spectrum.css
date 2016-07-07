@@ -5,6 +5,17 @@ Author: Brian Grinstead
 License: MIT
 ***/
 
+.sp-tag-row {
+    cursor: pointer;
+    margin-bottom: 2px;
+}
+
+.sp-tag-row .sp-tag-label {
+    margin-top: 2px;
+    margin-left: 2px;
+    float: left;
+}
+
 .sp-container {
     position:absolute;
     top:0;
