@@ -5,6 +5,10 @@ Author: Brian Grinstead
 License: MIT
 ***/
 
+.sp-tags-disabled .sp-tags-container {
+    display: none;
+}
+
 .sp-tag-row {
     cursor: pointer;
     margin-bottom: 2px;

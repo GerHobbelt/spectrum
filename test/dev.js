@@ -15,6 +15,9 @@ $("#custom").spectrum({
     tags: [{name: "A Tag", className: "a-tag-class"}, {name: "Another Tag", className: "another-tag-class"}],
     showButtons: false,
     showPalette: true,
-    showTags: true,
-    preferredFormat: "hex"
+    showTags: false,
+    preferredFormat: "hex",
+    tagChange: function(tag) {
+        console.log("TAG CHANGED!!!!! " + tag);
+    }
 });

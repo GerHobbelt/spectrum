@@ -26,6 +26,7 @@
         change: noop,
         show: noop,
         hide: noop,
+        tagChange: noop,
 
         // Options
         color: false,
@@ -196,6 +197,7 @@
         opts.callbacks = {
             'move': bind(opts.move, callbackContext),
             'change': bind(opts.change, callbackContext),
+            'tagChange': bind(opts.tagChange, callbackContext),
             'show': bind(opts.show, callbackContext),
             'hide': bind(opts.hide, callbackContext),
             'beforeShow': bind(opts.beforeShow, callbackContext)
@@ -303,6 +305,7 @@
             container.toggleClass("sp-buttons-disabled", !opts.showButtons);
             container.toggleClass("sp-palette-buttons-disabled", !opts.togglePaletteOnly);
             container.toggleClass("sp-palette-disabled", !opts.showPalette);
+            container.toggleClass("sp-tags-disabled", !opts.showTags);
             container.toggleClass("sp-palette-only", opts.showPaletteOnly);
             container.toggleClass("sp-initial-disabled", !opts.showInitial);
             container.addClass(opts.className).addClass(opts.containerClassName);
@@ -515,8 +518,12 @@
 
             function tagElementClick(e) {
                 var t = $(e.target).closest(".sp-tag-row");
+                var tag = t.data("tag-class-name");
+                // console.log("Tag clicked [" + t.data("tag-class-name") + "]");
 
-                console.log("Tag clicked [" + t.data("tag-class-name") + "]");                
+                if (callbacks.tagChange) {
+                    callbacks.tagChange(tag)
+                };
 
                 return false;
             }
