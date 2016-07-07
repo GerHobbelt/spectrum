@@ -513,9 +513,18 @@
                 return false;
             }
 
-            var paletteEvent = IE ? "mousedown.spectrum" : "click.spectrum touchstart.spectrum";
-            paletteContainer.on(paletteEvent, ".sp-thumb-el", paletteElementClick);
-            initialColorContainer.on(paletteEvent, ".sp-thumb-el:nth-child(1)", { ignore: true }, paletteElementClick);
+            function tagElementClick(e) {
+                var t = $(e.target).closest(".sp-tag-row");
+
+                console.log("Tag clicked [" + t.data("tag-class-name") + "]");                
+
+                return false;
+            }
+
+            var theEvent = IE ? "mousedown.spectrum" : "click.spectrum touchstart.spectrum";
+            paletteContainer.on(theEvent, ".sp-thumb-el", paletteElementClick);
+            initialColorContainer.on(theEvent, ".sp-thumb-el:nth-child(1)", { ignore: true }, paletteElementClick);
+            tagContainer.on(theEvent, ".sp-tag-row", tagElementClick);
         }
 
         function updateSelectionPaletteFromStorage() {
@@ -614,7 +623,7 @@
             // Label
             html.push("<span class='" + labelClasses.join(" ") + "'>" + tag.name + "</span>");
 
-            return "<div class='" + rowClasses.join(" ") + "'>" + html.join('') + "</div>";
+            return "<div data-tag-class-name='" + tag.className + "' class='" + rowClasses.join(" ") + "'>" + html.join('') + "</div>";
         }
 
         function drawInitial() {
