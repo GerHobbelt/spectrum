@@ -5,10 +5,25 @@ Author: Brian Grinstead
 License: MIT
 ***/
 
-.a-tag-class-bg {
-    background: blue;
+#swatch {
+    width: 200px;
+    height: 50px;
+    border: 1px solid grey;
+    margin-bottom: 20px;
 }
 
-.another-tag-class-bg {
-    background: red;
+.theme-accent-bg {
+    background-color: darkturquoise;
+}
+
+.theme-warning-bg {
+    background-color: darkorange;
+}
+
+.theme-error-bg {
+    background-color: red;
+}
+
+.theme-success-bg {
+    background-color: mediumseagreen;
 }

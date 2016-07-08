@@ -1,3 +1,11 @@
+function removeOldTag(element) {
+    element.css("background-color", "");
+    var oldTag = element.data("last-added-tag");
+    if (oldTag) {
+        element.removeClass(oldTag + "-bg");
+    }
+}
+
 $("#custom").spectrum({
     theme: "sp-ion",
     showInput: true,
@@ -12,12 +20,23 @@ $("#custom").spectrum({
         ["#900", "#b45f06", "#bf9000", "#38761d", "#134f5c", "#0b5394", "#351c75", "#741b47"],
         ["#600", "#783f04", "#7f6000", "#274e13", "#0c343d", "#073763", "#20124d", "#4c1130"]
     ],
-    tags: [{name: "A Tag", key: "a-tag-class"}, {name: "Another Tag", key: "another-tag-class"}],
+    tags: [{ name: "Accent", key: "theme-accent" }, { name: "Error", key: "theme-error" }, { name: "Warning", key: "theme-warning" }, { name: "Success", key: "theme-success" }],
     showButtons: false,
     showPalette: true,
     showTags: true,
     preferredFormat: "hex",
-    tagChange: function(tag) {
+    change: function (color) {
+        var colHex = color.toHexString();
+        console.log("Color  changed!!!" + colHex);
+        var w = $("#swatch");
+        removeOldTag(w);
+        w.css("background-color", colHex);
+    },
+    tagChange: function (tag) {
+        var w = $("#swatch");
+        removeOldTag(w);
+        w.data("last-added-tag", tag);
+        w.addClass(tag + "-bg");
         console.log("TAG CHANGED!!!!! " + tag);
     }
 });
